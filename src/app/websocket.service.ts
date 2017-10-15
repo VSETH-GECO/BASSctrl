@@ -1,28 +1,46 @@
 import {$WebSocket, WebSocketSendMode} from 'angular2-websocket/angular2-websocket';
 import {Injectable} from '@angular/core';
 
+const socket = new $WebSocket('ws://localhost:8080');
+let connected = false;
+
 @Injectable()
 export class WebsocketService {
-  private socket: $WebSocket;
-
-  public connect(url): boolean {
-    if (!this.socket) {
-      this.socket = new $WebSocket(url);
-    }
-
-    return this != null;
-  }
 
   public send(payload): boolean {
-    this.socket.send(payload, WebSocketSendMode.Promise).then(
-      () => {
-        return true;
+    // console.log('to send:', JSON.stringify(payload));
+
+    let reply = false;
+    socket.send(JSON.stringify(payload)).subscribe(
+      (msg) => {
+        console.log('next', msg.data);
+        reply = true;
+      },
+      (msg) => {
+        if (connected) {
+          console.log('error', msg);
+        }
+        reply = false;
       },
       () => {
-        return false;
-    }
+        reply = true;
+      }
     );
 
-    return false;
+    return reply;
   }
 }
+
+socket.onOpen(
+  () => {
+    connected = true;
+  }
+);
+
+socket.onMessage(
+  (msg: MessageEvent) => {
+    console.log('onMessage', msg.data);
+  },
+  {autoApply: false}
+);
+

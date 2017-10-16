@@ -1,4 +1,4 @@
-<h1>{{title}}</h1>
+<h2>{{title}}</h2>
 
 <div *ngIf="currentTrack">
 <h2>Player</h2>
@@ -9,9 +9,8 @@
 </div>
 
 <div *ngIf="playlist">
-  <h2>Playlist</h2>
   <ul>
-    <li *ngFor="let track of playlist">
+    <li *ngFor="let track of playlist" class="collection-item">
       {{track.title}} - {{track.votes}} -
       <button (click)="voteTrack(track, 1)">Upvote</button>
       <button (click)="voteTrack(track, -1)">Downvote</button>
@@ -20,7 +19,8 @@
 </div>
 
 <div>
-<h2>Add new track</h2>
-  <input type="text" [(ngModel)]="requestUri" placeholder="uri" size="30"/>
-  <button (click)="submitRequest()">Request</button>
+  <input type="text" [(ngModel)]="requestUri" placeholder="uri"/>
+  <button (click)="submitRequest()">Submit</button>
 </div>
+
+<button (click)="reload()">Reload</button>

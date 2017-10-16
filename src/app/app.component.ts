@@ -2,12 +2,16 @@ import { Component, OnInit, Input } from '@angular/core';
 import { WebsocketService } from './websocket.service';
 import { WsPackage } from './ws-package';
 import { PLAYLIST } from './playlist';
+import {ServerCtrlService} from './server-ctrl.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [WebsocketService]
+  providers: [
+    WebsocketService,
+    ServerCtrlService
+  ]
 })
 export class AppComponent implements OnInit {
   title = 'BASS control';
@@ -15,11 +19,21 @@ export class AppComponent implements OnInit {
   @Input() requestUri: string;
 
   // Player, should be refactored into it's own component later on
-  currentMethod = 'Play';
+  currentMethod = 'Pause';
   currentTrack;
 
   // This plus onInit should connect the websocket
-  constructor(private websocketService: WebsocketService) { }
+  constructor(private serverCtrlService: ServerCtrlService) {
+    serverCtrlService.wsPackages.subscribe(msg => {
+      console.log(msg);
+      if (msg.type === 'queue/all') {
+        this.setPlaylist(msg.data);
+      }
+      if (msg.type === 'player/current') {
+        this.currentTrack = msg.data;
+      }
+    });
+  }
 
   onPlayerMethod(): void {
     if (this.currentMethod === 'Play') {
@@ -36,38 +50,47 @@ export class AppComponent implements OnInit {
 
   // Playlist section
   voteTrack(track, vote): void {
-    this.websocketService.send(
+    this.serverCtrlService.wsPackages.next(
       new WsPackage('update', 'queue/votes', {
         id: track.id,
-        vote: vote
+        vote: vote,
+        userID: 'placeholder'
       }));
   }
 
-  setPlaylist(tracks): void {
+  public setPlaylist(tracks): void {
     this.playlist = tracks;
   }
 
   // on init of the app
   ngOnInit(): void {
-
-    // Fetch current track
-    this.websocketService.send(
-      new WsPackage('retrieve', 'player/current', null));
-
-    // Fetch playlist
-    this.websocketService.send(
-      new WsPackage('retrieve', 'queue/all', null));
+    this.reload();
 
     // simulate getting playlist
     this.setPlaylist(PLAYLIST);
+
+    console.log('hi');
+  }
+
+  reload(): void {
+    // Fetch current track
+    this.serverCtrlService.wsPackages.next(
+      new WsPackage('retrieve', 'player/current', null));
+
+    // Fetch playlist
+    this.serverCtrlService.wsPackages.next(
+      new WsPackage('retrieve', 'queue/all', null));
   }
 
   // Submit section
 
   submitRequest(): void {
     if (this.requestUri) {
-      if (this.websocketService.send(
-         new WsPackage('create', 'queue/uri', {uri: this.requestUri})
+      if (this.serverCtrlService.wsPackages.next(
+         new WsPackage('create', 'queue/uri', {
+           uri: this.requestUri,
+           userID: 'placeholder'
+         })
         )) {
         this.requestUri = null;
       }

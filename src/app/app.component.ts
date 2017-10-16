@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
         this.setPlaylist(msg.data);
       }
       if (msg.type === 'player/current') {
-        this.currentTrack = msg.data;
+        this.setCurrentTrack(msg.data);
       }
     });
   }
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
   // Playlist section
   voteTrack(track, vote): void {
     this.serverCtrlService.wsPackages.next(
-      new WsPackage('update', 'queue/votes', {
+      new WsPackage('update', 'queue/track/vote', {
         id: track.id,
         vote: vote,
         userID: 'placeholder'

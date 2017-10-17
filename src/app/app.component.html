@@ -1,11 +1,14 @@
 <h2>{{title}}</h2>
 
 <div *ngIf="currentTrack">
-<h2>Player</h2>
+  <h2>Player</h2>
+
   <p>Current Track:</p>
   <div><label>id:</label>{{currentTrack.id}}</div>
   <div><label>title:</label>{{currentTrack.title}}</div>
-<button (click)="onPlayerMethod()">{{currentMethod}}</button>
+  <button (click)="onPlayerMethod()">{{currentMethod}}</button>
+  <button (click)="voteTrack(currentTrack, 1)">Upvote</button>
+  <button (click)="voteTrack(currentTrack, -1)">Downvote</button>
 </div>
 
 <div *ngIf="playlist">

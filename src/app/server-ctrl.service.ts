@@ -17,6 +17,7 @@ export class ServerCtrlService {
   constructor(wsService: WebsocketService) {
     this.wsPackages = <Subject<WSPackage>>wsService.connect(SERVER_URL)
       .map((response: MessageEvent): WSPackage => {
+        console.log(response.data);
         const pack = JSON.parse(response.data);
         return {
           method: pack.method,

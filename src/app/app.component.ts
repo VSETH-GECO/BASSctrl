@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WebsocketService } from './websocket.service';
 import { WsPackage } from './ws-package';
-import { PLAYLIST } from './playlist';
 import {ServerCtrlService} from './server-ctrl.service';
+import {WebsocketHandler} from './websocket-handler';
 
 @Component({
   selector: 'app-root',
@@ -19,27 +19,44 @@ export class AppComponent implements OnInit {
   @Input() requestUri: string;
 
   // Player, should be refactored into it's own component later on
-  currentMethod = 'Pause';
+  currentMethod = 'Play';
   currentTrack;
 
-  // This plus onInit should connect the websocket
+
   constructor(private serverCtrlService: ServerCtrlService) {
     serverCtrlService.wsPackages.subscribe(msg => {
       console.log(msg);
-      if (msg.type === 'queue/all') {
-        this.setPlaylist(msg.data);
-      }
-      if (msg.type === 'player/current') {
-        this.setCurrentTrack(msg.data);
+
+      switch (msg.method) {
+        case 'get':
+          WebsocketHandler.get(this, msg);
+          break;
+
+        case 'post':
+          WebsocketHandler.post(this, msg);
+          break;
+
+        case 'patch':
+          WebsocketHandler.patch(this, msg);
+          break;
+
+        case 'delete':
+          WebsocketHandler.delete(this, msg);
+          break;
       }
     });
   }
 
   onPlayerMethod(): void {
     if (this.currentMethod === 'Play') {
-      this.currentMethod = 'Pause';
+      this.serverCtrlService.wsPackages.next(
+        new WsPackage('post', 'player/control/pause', null)
+      );
+
     } else {
-      this.currentMethod = 'Play';
+      this.serverCtrlService.wsPackages.next(
+        new WsPackage('post', 'player/control/play', null)
+      );
     }
   }
 
@@ -51,7 +68,7 @@ export class AppComponent implements OnInit {
   // Playlist section
   voteTrack(track, vote): void {
     this.serverCtrlService.wsPackages.next(
-      new WsPackage('update', 'queue/track/vote', {
+      new WsPackage('patch', 'track/vote', {
         id: track.id,
         vote: vote,
         userID: 'placeholder'
@@ -64,22 +81,16 @@ export class AppComponent implements OnInit {
 
   // on init of the app
   ngOnInit(): void {
-    this.reload();
-
-    // simulate getting playlist
-    this.setPlaylist(PLAYLIST);
-
-    console.log('hi');
   }
 
   reload(): void {
     // Fetch current track
     this.serverCtrlService.wsPackages.next(
-      new WsPackage('retrieve', 'player/current', null));
+      new WsPackage('get', 'player/current', null));
 
     // Fetch playlist
     this.serverCtrlService.wsPackages.next(
-      new WsPackage('retrieve', 'queue/all', null));
+      new WsPackage('get', 'queue/all', null));
   }
 
   // Submit section
@@ -87,7 +98,7 @@ export class AppComponent implements OnInit {
   submitRequest(): void {
     if (this.requestUri) {
       if (this.serverCtrlService.wsPackages.next(
-         new WsPackage('create', 'queue/uri', {
+         new WsPackage('post', 'queue/uri', {
            uri: this.requestUri,
            userID: 'placeholder'
          })

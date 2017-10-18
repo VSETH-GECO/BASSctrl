@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs/Rx';
 import { WebsocketService } from './websocket.service';
 
-const SERVER_URL = 'ws://localhost:8080';
+const SERVER_URL = 'ws://localhost:8455';
 
 export interface WSPackage {
   method: string;

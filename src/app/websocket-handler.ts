@@ -1,3 +1,5 @@
+import {Observable} from 'rxjs/Observable';
+
 export class WebsocketHandler {
   public static get(app, msg): void {
 
@@ -19,7 +21,19 @@ export class WebsocketHandler {
         break;
 
       case 'player/control':
-        app.currentMethod = msg.data;
+        app.currentMethod = msg.data.state;
+
+        switch (msg.data.state) {
+          case 'playing':
+            app.currentMethodIcon = 'pause';
+            Observable.interval(250)
+              .takeWhile(() => app.currentMethod === 'playing')
+              .subscribe(() => app.updateTrackProgress());
+            break;
+          case 'paused':
+            app.currentMethodIcon = 'play_arrow';
+            break;
+        }
         break;
     }
   }

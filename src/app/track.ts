@@ -1,8 +1,9 @@
-import {User} from './user';
-
 export class Track {
   id: number;
+  uri: string;
+  userID: string;
   title: string;
   votes: number;
-  submitter: User;
+  length: number;
+  position: number;
 }

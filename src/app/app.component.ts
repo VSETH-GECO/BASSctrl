@@ -20,8 +20,10 @@ export class AppComponent implements OnInit {
 
   // Player, should be refactored into it's own component later on
   currentMethod = 'Play';
+  currentMethodIcon = 'play_arrow';
   currentTrack;
-
+  currentTrackTimPos;
+  currentTrackPercent;
 
   constructor(private serverCtrlService: ServerCtrlService) {
     serverCtrlService.wsPackages.subscribe(msg => {
@@ -47,15 +49,28 @@ export class AppComponent implements OnInit {
     });
   }
 
+  public updateTrackProgress(): void {
+    this.currentTrackPercent = this.currentTrack.position / this.currentTrack.length * 100;
+
+    const pos = new Date(this.currentTrack.position);
+    const total = new Date(this.currentTrack.length);
+
+    const options = {minute: '2-digit', second: '2-digit'};
+    const posDateTime = new Intl.DateTimeFormat('en-US', options).format;
+    this.currentTrackTimPos = '[' + posDateTime(pos) + '|' + posDateTime(total) + ']';
+
+    this.currentTrack.position += 250;
+  }
+
   onPlayerMethod(): void {
-    if (this.currentMethod === 'Play') {
+    if (this.currentMethod === 'playing') {
       this.serverCtrlService.wsPackages.next(
-        new WsPackage('post', 'player/control/pause', null)
+        new WsPackage('patch', 'player/control', {state: 'pause'})
       );
 
     } else {
       this.serverCtrlService.wsPackages.next(
-        new WsPackage('post', 'player/control/play', null)
+        new WsPackage('patch', 'player/control', {state: 'play'})
       );
     }
   }
@@ -91,6 +106,10 @@ export class AppComponent implements OnInit {
     // Fetch playlist
     this.serverCtrlService.wsPackages.next(
       new WsPackage('get', 'queue/all', null));
+
+    // Fetch player state
+    this.serverCtrlService.wsPackages.next(
+      new WsPackage('get', 'player/state', null));
   }
 
   // Submit section

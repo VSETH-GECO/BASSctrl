@@ -1,27 +1,52 @@
-<h2>{{title}}</h2>
+<mat-toolbar color="primary">
+  <span>{{title}}</span>
+</mat-toolbar>
 
 <div *ngIf="currentTrack">
-  <h2>Player</h2>
-
-  <p>Current Track:</p>
-  <div><label>id:</label>{{currentTrack.id}}</div>
-  <div><label>title:</label>{{currentTrack.title}}</div>
-  <button (click)="onPlayerMethod()">{{currentMethod}}</button>
-  <button (click)="voteTrack(currentTrack, 1)">Upvote</button>
-  <button (click)="voteTrack(currentTrack, -1)">Downvote</button>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{currentTrack.title}}</mat-card-title>
+      <mat-card-subtitle>{{currentTrackTimPos}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-progress-bar [value]="currentTrackPercent">
+      </mat-progress-bar>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-icon-button (click)="onPlayerMethod()">
+        <mat-icon>{{currentMethodIcon}}</mat-icon>
+      </button>
+      <button mat-icon-button (click)="voteTrack(currentTrack, 1)">
+        <mat-icon>thumb_up</mat-icon>
+      </button>
+      <button mat-icon-button (click)="voteTrack(currentTrack, -1)">
+        <mat-icon>thumb_down</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>
 
 <div *ngIf="playlist">
-  <ul>
-    <li *ngFor="let track of playlist" class="collection-item">
+  <mat-list>
+    <mat-list-item *ngFor="let track of playlist" class="collection-item">
       {{track.title}} - {{track.votes}} -
-      <button (click)="voteTrack(track, 1)">Upvote</button>
-      <button (click)="voteTrack(track, -1)">Downvote</button>
-    </li>
-  </ul>
+      <button mat-icon-button (click)="voteTrack(track, 1)">
+        <mat-icon>thumb_up</mat-icon>
+      </button>
+      <button mat-icon-button (click)="voteTrack(track, -1)">
+        <mat-icon>thumb_down</mat-icon>
+      </button>
+    </mat-list-item>
+  </mat-list>
 </div>
 
 <div>
-  <input type="text" [(ngModel)]="requestUri" placeholder="uri"/>
-  <button (click)="submitRequest()">Submit</button>
+  <form>
+    <mat-form-field>
+      <input matInput placeholder="URI" [(ngModel)]="requestUri" name="uriInput">
+      <button mat-icon-button (click)="submitRequest()" matSuffix>
+        <mat-icon>send</mat-icon>
+      </button>
+    </mat-form-field>
+  </form>
 </div>

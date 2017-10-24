@@ -1,0 +1,27 @@
+.uri-form {
+  min-width: 200px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.uri-form-input {
+  width: 100%;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.real-body {
+  margin: 8px;
+}
+
+.player-thumbnail {
+  background-image: url(https://i.ytimg.com/vi/1vdBS4Fq5jM/hqdefault.jpg);
+  background-size: cover;
+}
+
+.submit-pending {
+  width: 20px;
+  height: 20px;
+}

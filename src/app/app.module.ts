@@ -3,10 +3,11 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import {FormsModule} from '@angular/forms';
+import {CookieService} from 'angular2-cookie/core';
 
 import {MatListModule, MatToolbarModule, MatCardModule} from '@angular/material';
 import {MatButtonModule, MatFormFieldModule, MatInputModule} from '@angular/material';
-import {MatIconModule, MatProgressBarModule} from '@angular/material';
+import {MatIconModule, MatProgressBarModule, MatProgressSpinnerModule} from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -25,9 +26,10 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     MatInputModule,
     BrowserAnimationsModule,
     MatIconModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatProgressSpinnerModule
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -8,6 +8,11 @@ export class WebsocketHandler {
 
   public static post(app, msg): void {
     switch (msg.type) {
+      case 'ack':
+        app.requestUri = null;
+        app.submitPending = false;
+        break;
+
       case 'queue/all':
         app.setPlaylist(msg.data);
         break;
@@ -17,6 +22,7 @@ export class WebsocketHandler {
         break;
 
       case 'app/welcome':
+        app.loginWToken();
         app.reload();
         break;
 

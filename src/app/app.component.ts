@@ -3,6 +3,7 @@ import { WebsocketService } from './websocket.service';
 import { WsPackage } from './ws-package';
 import {ServerCtrlService} from './server-ctrl.service';
 import {WebsocketHandler} from './websocket-handler';
+import {CookieService} from 'angular2-cookie/core';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,8 @@ export class AppComponent implements OnInit {
   currentTrack;
   currentTrackTimPos;
   currentTrackPercent;
+  currentTrackThumb = 'https://i.ytimg.com/vi/1vdBS4Fq5jM/hqdefault.jpg';
+  submitPending = false;
 
   constructor(private serverCtrlService: ServerCtrlService) {
     serverCtrlService.wsPackages.subscribe(msg => {
@@ -116,16 +119,36 @@ export class AppComponent implements OnInit {
 
   submitRequest(): void {
     if (this.requestUri) {
-      if (this.serverCtrlService.wsPackages.next(
+      this.serverCtrlService.wsPackages.next(
          new WsPackage('post', 'queue/uri', {
            uri: this.requestUri,
            userID: 'placeholder'
          })
-        )) {
-        this.requestUri = null;
-      }
+        );
+      this.submitPending = true;
     } else {
       alert('Please enter a uri');
     }
+  }
+
+  // Login
+  loginWToken(): void {
+    let token;
+    if (token = new CookieService().get('token')) {
+      this.serverCtrlService.wsPackages.next(
+        new WsPackage('post', 'user/login', {
+          token: token
+        })
+      );
+    }
+  }
+
+  loginWCreds(username, password): void {
+    this.serverCtrlService.wsPackages.next(
+      new WsPackage('post', 'user/login', {
+        username: username,
+        password: password
+      })
+    );
   }
 }

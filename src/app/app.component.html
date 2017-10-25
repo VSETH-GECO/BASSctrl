@@ -6,7 +6,8 @@
   <div *ngIf="currentTrack">
     <mat-card>
       <mat-card-header>
-        <div mat-card-avatar class="player-thumbnail"></div>
+        <div mat-card-avatar class="player-thumbnail"
+             [ngStyle]="{'background-image': 'url(' + currentTrackThumb + ')'}"></div>
         <mat-card-title>{{currentTrack.title}}</mat-card-title>
         <mat-card-subtitle>Submitted by {{currentTrack.userID}}</mat-card-subtitle>
       </mat-card-header>
@@ -56,4 +57,6 @@
       </mat-form-field>
     </form>
   </div>
+
+  <button (click)="login()">login</button>
 </div>

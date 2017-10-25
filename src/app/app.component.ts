@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   currentTrack;
   currentTrackTimPos;
   currentTrackPercent;
-  currentTrackThumb = 'https://i.ytimg.com/vi/1vdBS4Fq5jM/hqdefault.jpg';
+  currentTrackThumb;
   submitPending = false;
 
   constructor(private serverCtrlService: ServerCtrlService) {
@@ -80,6 +80,8 @@ export class AppComponent implements OnInit {
 
   public setCurrentTrack(track): void {
     this.currentTrack = track;
+    const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
+    this.currentTrackThumb = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
   }
   // End of Player section
 
@@ -150,5 +152,14 @@ export class AppComponent implements OnInit {
         password: password
       })
     );
+  }
+
+  setToken(token): void {
+    new CookieService().put('token', token);
+  }
+
+  // TODO remove
+  login(): void {
+    this.loginWCreds('admin', 'password');
   }
 }

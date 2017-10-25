@@ -26,6 +26,10 @@ export class WebsocketHandler {
         app.reload();
         break;
 
+      case 'user/token':
+        app.setToken(msg.data.token);
+        break;
+
       case 'player/control':
         app.currentMethod = msg.data.state;
 
@@ -41,6 +45,12 @@ export class WebsocketHandler {
             break;
         }
         break;
+
+      case 'user/unauthorized':
+        if (msg.data.type === 'queue/uri') {
+          app.submitPending = false;
+          alert(msg.data.message);
+        }
     }
   }
 

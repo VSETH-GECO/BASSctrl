@@ -44,6 +44,10 @@ export class WebsocketHandler {
           case 'paused':
             app.currentMethodIcon = 'play_arrow';
             break;
+
+          case 'stopped':
+            app.currentTrack = null;
+            break;
         }
         break;
 

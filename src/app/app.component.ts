@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   @Input() requestUri: string;
 
   // Player, should be refactored into it's own component later on
-  currentMethod = 'Play';
+  currentMethod;
   currentMethodIcon = 'play_arrow';
   currentTrack;
   currentTrackTimPos;

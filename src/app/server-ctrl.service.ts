@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs/Rx';
 import { WebsocketService } from './websocket.service';
 
-const SERVER_URL = 'ws://api.' + window.location.hostname;
+const SERVER_URL = 'wss://api.' + window.location.hostname.replace('dev.', '');
 
 export interface WSPackage {
   method: string;

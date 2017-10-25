@@ -1,5 +1,19 @@
 <mat-toolbar color="primary">
   <span>{{title}}</span>
+
+  <div class="spacer"></div>
+
+  <div *ngIf="username">
+    <button mat-button [matMenuTriggerFor]="menu">{{username}}</button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>Logout</button>
+    </mat-menu>
+  </div>
+  <div *ngIf="!username">
+    <button mat-icon-button (click)="login()">
+      <mat-icon>input</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>
 
 <div class="real-body">
@@ -57,6 +71,4 @@
       </mat-form-field>
     </form>
   </div>
-
-  <button (click)="login()">login</button>
 </div>

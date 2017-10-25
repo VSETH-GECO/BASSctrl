@@ -28,6 +28,8 @@ export class AppComponent implements OnInit {
   currentTrackThumb;
   submitPending = false;
 
+  username;
+
   constructor(private serverCtrlService: ServerCtrlService) {
     serverCtrlService.wsPackages.subscribe(msg => {
       console.log(msg);
@@ -52,6 +54,7 @@ export class AppComponent implements OnInit {
     });
   }
 
+  // FIXME pl0x
   public updateTrackProgress(): void {
     this.currentTrackPercent = this.currentTrack.position / this.currentTrack.length * 100;
 
@@ -80,8 +83,11 @@ export class AppComponent implements OnInit {
 
   public setCurrentTrack(track): void {
     this.currentTrack = track;
-    const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
-    this.currentTrackThumb = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+
+    if (track) {
+      const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
+      this.currentTrackThumb = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    }
   }
   // End of Player section
 
@@ -90,8 +96,7 @@ export class AppComponent implements OnInit {
     this.serverCtrlService.wsPackages.next(
       new WsPackage('patch', 'track/vote', {
         id: track.id,
-        vote: vote,
-        userID: 'placeholder'
+        vote: vote
       }));
   }
 
@@ -123,8 +128,7 @@ export class AppComponent implements OnInit {
     if (this.requestUri) {
       this.serverCtrlService.wsPackages.next(
          new WsPackage('post', 'queue/uri', {
-           uri: this.requestUri,
-           userID: 'placeholder'
+           uri: this.requestUri
          })
         );
       this.submitPending = true;
@@ -156,6 +160,10 @@ export class AppComponent implements OnInit {
 
   setToken(token): void {
     new CookieService().put('token', token);
+  }
+
+  setUsername(username): void {
+    this.username = username;
   }
 
   // TODO remove

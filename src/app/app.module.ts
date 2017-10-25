@@ -8,6 +8,7 @@ import {CookieService} from 'angular2-cookie/core';
 import {MatListModule, MatToolbarModule, MatCardModule} from '@angular/material';
 import {MatButtonModule, MatFormFieldModule, MatInputModule} from '@angular/material';
 import {MatIconModule, MatProgressBarModule, MatProgressSpinnerModule} from '@angular/material';
+import {MatMenuModule} from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -27,7 +28,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     BrowserAnimationsModule,
     MatIconModule,
     MatProgressBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatMenuModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

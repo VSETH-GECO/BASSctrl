@@ -28,6 +28,7 @@ export class WebsocketHandler {
 
       case 'user/token':
         app.setToken(msg.data.token);
+        app.setUsername(msg.data.username);
         break;
 
       case 'player/control':

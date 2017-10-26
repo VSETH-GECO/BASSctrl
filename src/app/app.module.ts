@@ -1,20 +1,32 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
-import { AppComponent } from './app.component';
+import {AppComponent} from './app.component';
+import {LoginComponent} from './login.component';
+import {PlayerComponent} from './player.component';
 import {FormsModule} from '@angular/forms';
 import {CookieService} from 'angular2-cookie/core';
 
-import {MatListModule, MatToolbarModule, MatCardModule} from '@angular/material';
-import {MatButtonModule, MatFormFieldModule, MatInputModule} from '@angular/material';
-import {MatIconModule, MatProgressBarModule, MatProgressSpinnerModule} from '@angular/material';
-import {MatMenuModule} from '@angular/material';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatFormFieldModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatProgressBarModule,
+  MatProgressSpinnerModule,
+  MatToolbarModule
+} from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PlayerComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

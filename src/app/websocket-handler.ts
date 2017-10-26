@@ -1,71 +1,76 @@
 import {Observable} from 'rxjs/Observable';
+import {PlayerComponent} from './player.component';
+import {AppComponent} from './app.component';
 
 export class WebsocketHandler {
-  public static get(app, msg): void {
+  public static player: PlayerComponent;
+  public static app: AppComponent;
+
+  public static get(msg): void {
 
   }
 
 
-  public static post(app, msg): void {
+  public static post(msg): void {
     switch (msg.type) {
       case 'ack':
-        app.requestUri = null;
-        app.submitPending = false;
+        WebsocketHandler.app.requestUri = null;
+        WebsocketHandler.app.submitPending = false;
         break;
 
       case 'queue/all':
-        app.setPlaylist(msg.data);
+        WebsocketHandler.app.setPlaylist(msg.data);
         break;
 
       case 'player/current':
-        app.setCurrentTrack(msg.data);
+        WebsocketHandler.player.setCurrentTrack(msg.data);
         break;
 
       case 'app/welcome':
-        app.loginWToken();
-        app.reload();
+        WebsocketHandler.app.loginWToken();
+        WebsocketHandler.app.reload();
         break;
 
       case 'user/token':
-        app.setToken(msg.data.token);
-        app.setUsername(msg.data.username);
+        WebsocketHandler.app.setToken(msg.data.token);
+        WebsocketHandler.app.setUsername(msg.data.username);
         break;
 
       case 'player/control':
-        app.currentMethod = msg.data.state;
+        WebsocketHandler.player.currentMethod = msg.data.state;
 
         switch (msg.data.state) {
           case 'playing':
-            app.currentMethodIcon = 'pause';
+            WebsocketHandler.player.currentMethodIcon = 'pause';
             Observable.interval(250)
-              .takeWhile(() => app.currentMethod === 'playing')
-              .subscribe(() => app.updateTrackProgress());
+              .takeWhile(() => WebsocketHandler.player.currentMethod === 'playing')
+              .subscribe(() => WebsocketHandler.player.updateTrackProgress());
             break;
           case 'paused':
-            app.currentMethodIcon = 'play_arrow';
+            WebsocketHandler.player.currentMethodIcon = 'play_arrow';
             break;
 
           case 'stopped':
-            app.currentTrack = null;
+            WebsocketHandler.player.track = null;
             break;
         }
         break;
 
       case 'user/unauthorized':
         if (msg.data.type === 'queue/uri') {
-          app.submitPending = false;
+          WebsocketHandler.app.submitPending = false;
           alert(msg.data.message);
         }
     }
   }
 
 
-  public static patch(app, msg): void {
+  public static patch(msg): void {
 
   }
 
 
-  public static delete(app, msg): void {
+  public static delete(msg): void {
 
   }
 }

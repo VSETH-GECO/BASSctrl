@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { WebsocketService } from './websocket.service';
-import { WsPackage } from './ws-package';
+import {Component, Input, OnInit} from '@angular/core';
+import {WebsocketService} from './websocket.service';
+import {WsPackage} from './ws-package';
 import {ServerCtrlService} from './server-ctrl.service';
 import {WebsocketHandler} from './websocket-handler';
 import {CookieService} from 'angular2-cookie/core';
@@ -19,13 +19,6 @@ export class AppComponent implements OnInit {
   playlist;
   @Input() requestUri: string;
 
-  // Player, should be refactored into it's own component later on
-  currentMethod;
-  currentMethodIcon = 'play_arrow';
-  currentTrack;
-  currentTrackTimPos;
-  currentTrackPercent;
-  currentTrackThumb;
   submitPending = false;
 
   username;
@@ -36,60 +29,27 @@ export class AppComponent implements OnInit {
 
       switch (msg.method) {
         case 'get':
-          WebsocketHandler.get(this, msg);
+          WebsocketHandler.get(msg);
           break;
 
         case 'post':
-          WebsocketHandler.post(this, msg);
+          WebsocketHandler.post(msg);
           break;
 
         case 'patch':
-          WebsocketHandler.patch(this, msg);
+          WebsocketHandler.patch(msg);
           break;
 
         case 'delete':
-          WebsocketHandler.delete(this, msg);
+          WebsocketHandler.delete(msg);
           break;
       }
     });
   }
 
-  // FIXME pl0x
-  public updateTrackProgress(): void {
-    this.currentTrackPercent = this.currentTrack.position / this.currentTrack.length * 100;
-
-    const pos = new Date(this.currentTrack.position);
-    const total = new Date(this.currentTrack.length);
-
-    const options = {minute: '2-digit', second: '2-digit'};
-    const posDateTime = new Intl.DateTimeFormat('en-US', options).format;
-    this.currentTrackTimPos = '[' + posDateTime(pos) + '|' + posDateTime(total) + ']';
-
-    this.currentTrack.position += 250;
+  ngOnInit(): void {
+    WebsocketHandler.app = this;
   }
-
-  onPlayerMethod(): void {
-    if (this.currentMethod === 'playing') {
-      this.serverCtrlService.wsPackages.next(
-        new WsPackage('patch', 'player/control', {state: 'pause'})
-      );
-
-    } else {
-      this.serverCtrlService.wsPackages.next(
-        new WsPackage('patch', 'player/control', {state: 'play'})
-      );
-    }
-  }
-
-  public setCurrentTrack(track): void {
-    this.currentTrack = track;
-
-    if (track) {
-      const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
-      this.currentTrackThumb = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
-    }
-  }
-  // End of Player section
 
   // Playlist section
   voteTrack(track, vote): void {
@@ -102,10 +62,6 @@ export class AppComponent implements OnInit {
 
   public setPlaylist(tracks): void {
     this.playlist = tracks;
-  }
-
-  // on init of the app
-  ngOnInit(): void {
   }
 
   reload(): void {

@@ -20,32 +20,7 @@
 </mat-toolbar>
 
 <div class="real-body">
-  <div *ngIf="currentTrack">
-    <mat-card>
-      <mat-card-header>
-        <div mat-card-avatar class="player-thumbnail"
-             [ngStyle]="{'background-image': 'url(' + currentTrackThumb + ')'}"></div>
-        <mat-card-title>{{currentTrack.title}}</mat-card-title>
-        <mat-card-subtitle>Submitted by {{currentTrack.userID}}</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-progress-bar [value]="currentTrackPercent">
-        </mat-progress-bar>
-        <span>{{currentTrackTimPos}}</span>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-icon-button (click)="onPlayerMethod()">
-          <mat-icon>{{currentMethodIcon}}</mat-icon>
-        </button>
-        <button mat-icon-button (click)="voteTrack(currentTrack, 1)">
-          <mat-icon>thumb_up</mat-icon>
-        </button>
-        <button mat-icon-button (click)="voteTrack(currentTrack, -1)">
-          <mat-icon>thumb_down</mat-icon>
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+  <player></player>
 
   <div *ngIf="playlist">
     <mat-list>
@@ -74,4 +49,6 @@
       </mat-form-field>
     </form>
   </div>
+
+  <login></login>
 </div>

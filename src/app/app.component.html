@@ -9,7 +9,7 @@
       <mat-icon>verified_user</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item>Logout</button>
+      <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
   </div>
   <div *ngIf="!username">

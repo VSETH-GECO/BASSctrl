@@ -2,6 +2,7 @@ import {Observable} from 'rxjs/Observable';
 import {PlayerComponent} from './player.component';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login.component';
+import {CookieService} from "angular2-cookie/core";
 
 export class WebsocketHandler {
   public static player: PlayerComponent;
@@ -39,6 +40,11 @@ export class WebsocketHandler {
         WebsocketHandler.app.setUsername(msg.data.username);
         WebsocketHandler.app.logginIn = false;
         WebsocketHandler.app.reload();
+        break;
+
+      case 'user/logout':
+        WebsocketHandler.app.username = null;
+        new CookieService().remove('token');
         break;
 
       case 'player/control':

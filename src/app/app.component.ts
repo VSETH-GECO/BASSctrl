@@ -3,6 +3,7 @@ import {WebsocketService} from './websocket.service';
 import {WsPackage} from './ws-package';
 import {ServerCtrlService} from './server-ctrl.service';
 import {WebsocketHandler} from './websocket-handler';
+import {CookieService} from 'angular2-cookie/core';
 
 @Component({
   selector: 'app-root',
@@ -100,5 +101,16 @@ export class AppComponent implements OnInit {
   // TODO remove
   login(): void {
     this.logginIn = true;
+  }
+
+  logout(): void {
+    let token;
+    if (token = new CookieService().get('token')) {
+      this.serverCtrlService.wsPackages.next(
+        new WsPackage('delete', 'user/logout', {
+          token: token
+        })
+      );
+    }
   }
 }

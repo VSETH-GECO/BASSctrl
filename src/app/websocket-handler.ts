@@ -1,9 +1,11 @@
 import {Observable} from 'rxjs/Observable';
 import {PlayerComponent} from './player.component';
 import {AppComponent} from './app.component';
+import {LoginComponent} from './login.component';
 
 export class WebsocketHandler {
   public static player: PlayerComponent;
+  public static login: LoginComponent;
   public static app: AppComponent;
 
   public static get(msg): void {
@@ -27,13 +29,16 @@ export class WebsocketHandler {
         break;
 
       case 'app/welcome':
-        WebsocketHandler.app.loginWToken();
+        WebsocketHandler.login.loginWToken();
         WebsocketHandler.app.reload();
+        WebsocketHandler.app.logginIn = false;
         break;
 
       case 'user/token':
-        WebsocketHandler.app.setToken(msg.data.token);
+        WebsocketHandler.login.setToken(msg.data.token);
         WebsocketHandler.app.setUsername(msg.data.username);
+        WebsocketHandler.app.logginIn = false;
+        WebsocketHandler.app.reload();
         break;
 
       case 'player/control':

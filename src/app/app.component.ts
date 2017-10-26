@@ -3,7 +3,6 @@ import {WebsocketService} from './websocket.service';
 import {WsPackage} from './ws-package';
 import {ServerCtrlService} from './server-ctrl.service';
 import {WebsocketHandler} from './websocket-handler';
-import {CookieService} from 'angular2-cookie/core';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +19,7 @@ export class AppComponent implements OnInit {
   @Input() requestUri: string;
 
   submitPending = false;
+  logginIn = true;
 
   username;
 
@@ -93,37 +93,12 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Login
-  loginWToken(): void {
-    let token;
-    if (token = new CookieService().get('token')) {
-      this.serverCtrlService.wsPackages.next(
-        new WsPackage('post', 'user/login', {
-          token: token
-        })
-      );
-    }
-  }
-
-  loginWCreds(username, password): void {
-    this.serverCtrlService.wsPackages.next(
-      new WsPackage('post', 'user/login', {
-        username: username,
-        password: password
-      })
-    );
-  }
-
-  setToken(token): void {
-    new CookieService().put('token', token);
-  }
-
   setUsername(username): void {
     this.username = username;
   }
 
   // TODO remove
   login(): void {
-    this.loginWCreds('admin', 'password');
+    this.logginIn = true;
   }
 }

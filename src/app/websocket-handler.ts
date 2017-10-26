@@ -32,13 +32,13 @@ export class WebsocketHandler {
       case 'app/welcome':
         WebsocketHandler.login.loginWToken();
         WebsocketHandler.app.reload();
-        WebsocketHandler.app.logginIn = false;
+        WebsocketHandler.app.loggingIn = false;
         break;
 
       case 'user/token':
         WebsocketHandler.login.setToken(msg.data.token);
         WebsocketHandler.app.setUsername(msg.data.username);
-        WebsocketHandler.app.logginIn = false;
+        WebsocketHandler.app.loggingIn = false;
         WebsocketHandler.app.reload();
         break;
 

@@ -20,8 +20,8 @@
 </mat-toolbar>
 
 <div class="real-body">
-  <div *ngIf="!logginIn">
-    <player></player>
+  <div *ngIf="!loggingIn">
+    <app-player></app-player>
 
     <div *ngIf="playlist">
       <mat-list>
@@ -52,5 +52,5 @@
     </div>
   </div>
 
-  <login *ngIf="logginIn"></login>
+  <app-login *ngIf="loggingIn"></app-login>
 </div>

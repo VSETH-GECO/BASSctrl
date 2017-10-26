@@ -5,7 +5,7 @@ import {ServerCtrlService} from './server-ctrl.service';
 import {WebsocketHandler} from './websocket-handler';
 
 @Component({
-  selector: 'player',
+  selector: 'app-player',
   templateUrl: '/player.component.html',
   styleUrls: ['./app.component.css'],
 })

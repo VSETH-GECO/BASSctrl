@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   @Input() requestUri: string;
 
   submitPending = false;
-  logginIn = true;
+  loggingIn = true;
 
   username;
 
@@ -100,7 +100,7 @@ export class AppComponent implements OnInit {
 
   // TODO remove
   login(): void {
-    this.logginIn = true;
+    this.loggingIn = true;
   }
 
   logout(): void {

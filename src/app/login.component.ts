@@ -1,11 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ServerCtrlService} from './server-ctrl.service';
 import {WsPackage} from './ws-package';
-import {CookieService} from "angular2-cookie/core";
-import {WebsocketHandler} from "./websocket-handler";
+import {CookieService} from 'angular2-cookie/core';
+import {WebsocketHandler} from './websocket-handler';
 
 @Component({
-  selector: 'login',
+  selector: 'app-login',
   templateUrl: '/login.component.html',
 })
 export class LoginComponent implements OnInit {
@@ -15,7 +15,6 @@ export class LoginComponent implements OnInit {
   constructor(private serverCtrlService: ServerCtrlService) {}
 
   ngOnInit(): void {
-    console.log('test');
     WebsocketHandler.login = this;
   }
 

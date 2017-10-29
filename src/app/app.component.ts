@@ -20,7 +20,10 @@ export class AppComponent implements OnInit {
   @Input() requestUri: string;
 
   submitPending = false;
-  loggingIn = true;
+  @Input() loggingIn = true;
+
+  @Input() newUserName: string;
+  @Input() newUserPassword: string;
 
   username;
 
@@ -98,7 +101,6 @@ export class AppComponent implements OnInit {
     this.username = username;
   }
 
-  // TODO remove
   login(): void {
     this.loggingIn = true;
   }
@@ -111,6 +113,20 @@ export class AppComponent implements OnInit {
           token: token
         })
       );
+    }
+  }
+
+  registerNewUser(): void {
+    if (this.newUserName && this.newUserPassword) {
+      this.serverCtrlService.wsPackages.next(
+        new WsPackage('post', 'user/register', {
+          username: this.newUserName,
+          password: this.newUserPassword
+        })
+      );
+
+      this.newUserName = null;
+      this.newUserPassword = null;
     }
   }
 }

@@ -9,6 +9,7 @@
       <mat-icon>verified_user</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="addUser()">Add user</button>
       <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
   </div>
@@ -53,4 +54,15 @@
   </div>
 
   <app-login *ngIf="loggingIn"></app-login>
+
+  <form>
+    <mat-form-field>
+      <input matInput placeholder="Username" [(ngModel)]="newUserName" name="newUserName">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Password" [(ngModel)]="newUserPassword" name="newUserPassword" type="password">
+    </mat-form-field>
+
+    <button mat-raised-button (click)="registerNewUser()">Register</button>
+  </form>
 </div>

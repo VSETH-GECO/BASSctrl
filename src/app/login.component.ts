@@ -11,6 +11,7 @@ import {WebsocketHandler} from './websocket-handler';
 export class LoginComponent implements OnInit {
   @Input() username: string;
   @Input() password: string;
+  @Input() loggingIn: boolean;
 
   constructor(private serverCtrlService: ServerCtrlService) {}
 
@@ -30,6 +31,11 @@ export class LoginComponent implements OnInit {
     } else {
       alert('Enter both username and password to proceed');
     }
+  }
+
+  abortLogin(): void {
+    this.username = null;
+    this.password = null;
   }
 
   public loginWToken(): void {

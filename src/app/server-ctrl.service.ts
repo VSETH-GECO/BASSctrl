@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs/Rx';
-import { WebsocketService } from './websocket.service';
+import {Injectable} from '@angular/core';
+import {Subject} from 'rxjs/Rx';
+import {WebsocketService} from './websocket.service';
 
-const SERVER_URL = 'ws://localhost:8455';
+const SERVER_URL = 'wss://api.' + window.location.hostname.replace('dev.', '');
 
 export interface WSPackage {
   method: string;
@@ -25,5 +25,9 @@ export class ServerCtrlService {
           data: pack.data
         };
       });
+  }
+
+  send(wsPackage: WSPackage): void {
+    this.wsPackages.next(wsPackage);
   }
 }

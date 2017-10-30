@@ -1,13 +1,15 @@
 import {Observable} from 'rxjs/Observable';
 import {PlayerComponent} from './player.component';
-import {AppComponent} from './app.component';
 import {LoginComponent} from './login.component';
 import {CookieService} from "angular2-cookie/core";
+import {MainViewComponent} from "./main-view.component";
+import {RegisterComponent} from "./register.component";
 
 export class WebsocketHandler {
   public static player: PlayerComponent;
   public static login: LoginComponent;
-  public static app: AppComponent;
+  public static app: MainViewComponent;
+  public static reg: RegisterComponent;
 
   public static get(msg): void {
 

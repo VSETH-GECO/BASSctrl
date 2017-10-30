@@ -1,11 +1,13 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {RouterModule} from '@angular/router';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login.component';
 import {PlayerComponent} from './player.component';
-import {FormsModule} from '@angular/forms';
-import {CookieService} from 'angular2-cookie/core';
+import {MainViewComponent} from './main-view.component';
+import {RegisterComponent} from './register.component';
 
 import {
   MatButtonModule,
@@ -21,12 +23,20 @@ import {
 } from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {OverviewComponent} from './overview.component';
+import {CookieService} from 'angular2-cookie/core';
+
+RouterModule.forRoot([
+  {
+    path: 'login',
+    component: LoginComponent
+  }
+]);
 
 @NgModule({
   declarations: [
     AppComponent,
-    OverviewComponent,
+    MainViewComponent,
+    RegisterComponent,
     PlayerComponent,
     LoginComponent
   ],
@@ -43,9 +53,28 @@ import {OverviewComponent} from './overview.component';
     MatIconModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    MatMenuModule
+    MatMenuModule,
+    RouterModule.forRoot([
+      {
+        path: 'login',
+        component: LoginComponent
+      },
+      {
+        path: 'register',
+        component: RegisterComponent
+      },
+      {
+        path: 'main',
+        component: MainViewComponent
+      },
+      {
+        path: '',
+        redirectTo: '/main',
+        pathMatch: 'full'
+      }
+    ])
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

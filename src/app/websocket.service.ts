@@ -1,19 +1,24 @@
 import {Injectable} from '@angular/core';
 import * as Rx from 'rxjs/Rx';
+import {WsPackage} from "./ws-package";
+import {Subject} from "rxjs/Subject";
+import {WSPackage} from "./server-ctrl.service";
 
 @Injectable()
-export class WebsocketService {
+export class WebSocketService {
   constructor() { }
 
-  private subject: Rx.Subject<MessageEvent>;
+  private socket: Rx.Subject<MessageEvent>;
+  private packages:
+  private SERVER_URL: string;
 
   public connect(url): Rx.Subject<MessageEvent> {
-    if (!this.subject) {
-      this.subject = this.create(url);
+    if (!this.socket) {
+      this.socket = this.create(url);
       console.log('Connected to:', url);
     }
 
-    return this.subject;
+    return this.socket;
   }
 
   private create(url): Rx.Subject<MessageEvent> {
@@ -24,6 +29,7 @@ export class WebsocketService {
         socket.onmessage = obs.next.bind(obs);
         socket.onerror = obs.error.bind(obs);
         socket.onclose = obs.complete.bind(obs);
+
         return socket.close.bind(socket);
       })
 
@@ -36,5 +42,18 @@ export class WebsocketService {
     };
 
     return Rx.Subject.create(observer, observable);
+  }
+
+  public send(wsPackage: WsPackage): void {
+    <Subject<WSPackage>>this.connect(this.SERVER_URL)
+      .map((response: MessageEvent): WSPackage => {
+        console.log(response.data);
+        const pack = JSON.parse(response.data);
+        return {
+          method: pack.method,
+          type: pack.type,
+          data: pack.data
+        };
+      });
   }
 }

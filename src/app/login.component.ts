@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ServerCtrlService} from './server-ctrl.service';
 import {WsPackage} from './ws-package';
 import {CookieService} from 'angular2-cookie/core';
 import {WebsocketHandler} from './websocket-handler';
+import {WebSocketService} from './websocket.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +13,9 @@ export class LoginComponent implements OnInit {
   @Input() password: string;
   @Input() loggingIn: boolean;
 
-  constructor(private wsService: ServerCtrlService) {}
+  constructor(private wsService: WebSocketService) {
+    this.wsService.connect('');
+  }
 
   ngOnInit(): void {
     WebsocketHandler.login = this;

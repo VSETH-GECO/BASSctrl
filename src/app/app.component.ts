@@ -27,8 +27,8 @@ export class AppComponent implements OnInit {
 
   username;
 
-  constructor(private serverCtrlService: ServerCtrlService) {
-    serverCtrlService.wsPackages.subscribe(msg => {
+  constructor(private wsService: ServerCtrlService) {
+    wsService.wsPackages.subscribe(msg => {
       console.log(msg);
 
       switch (msg.method) {
@@ -57,7 +57,7 @@ export class AppComponent implements OnInit {
 
   // Playlist section
   voteTrack(track, vote): void {
-    this.serverCtrlService.wsPackages.next(
+    this.wsService.wsPackages.next(
       new WsPackage('patch', 'track/vote', {
         id: track.id,
         vote: vote
@@ -70,15 +70,15 @@ export class AppComponent implements OnInit {
 
   reload(): void {
     // Fetch current track
-    this.serverCtrlService.wsPackages.next(
+    this.wsService.wsPackages.next(
       new WsPackage('get', 'player/current', null));
 
     // Fetch playlist
-    this.serverCtrlService.wsPackages.next(
+    this.wsService.wsPackages.next(
       new WsPackage('get', 'queue/all', null));
 
     // Fetch player state
-    this.serverCtrlService.wsPackages.next(
+    this.wsService.wsPackages.next(
       new WsPackage('get', 'player/state', null));
   }
 
@@ -86,7 +86,7 @@ export class AppComponent implements OnInit {
 
   submitRequest(): void {
     if (this.requestUri) {
-      this.serverCtrlService.wsPackages.next(
+      this.wsService.send(
          new WsPackage('post', 'queue/uri', {
            uri: this.requestUri
          })
@@ -108,7 +108,7 @@ export class AppComponent implements OnInit {
   logout(): void {
     let token;
     if (token = new CookieService().get('token')) {
-      this.serverCtrlService.wsPackages.next(
+      this.wsService.send(
         new WsPackage('delete', 'user/logout', {
           token: token
         })
@@ -118,7 +118,7 @@ export class AppComponent implements OnInit {
 
   registerNewUser(): void {
     if (this.newUserName && this.newUserPassword) {
-      this.serverCtrlService.wsPackages.next(
+      this.wsService.send(
         new WsPackage('post', 'user/register', {
           username: this.newUserName,
           password: this.newUserPassword

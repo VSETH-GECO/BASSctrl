@@ -21,10 +21,12 @@ import {
 } from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {OverviewComponent} from './overview.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    OverviewComponent,
     PlayerComponent,
     LoginComponent
   ],

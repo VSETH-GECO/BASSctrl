@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   @Input() password: string;
   @Input() loggingIn: boolean;
 
-  constructor(private serverCtrlService: ServerCtrlService) {}
+  constructor(private wsService: ServerCtrlService) {}
 
   ngOnInit(): void {
     WebsocketHandler.login = this;
@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   login(): void {
     if (this.username && this.password) {
 
-      this.serverCtrlService.wsPackages.next(
+      this.wsService.send(
         new WsPackage('post', 'user/login', {
           username: this.username,
           password: this.password
@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
   public loginWToken(): void {
     let token;
     if (token = new CookieService().get('token')) {
-      this.serverCtrlService.wsPackages.next(
+      this.wsService.send(
         new WsPackage('post', 'user/login', {
           token: token
         })

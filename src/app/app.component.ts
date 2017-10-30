@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { WebsocketService } from './websocket.service';
-import { WsPackage } from './ws-package';
+import {Component, Input, OnInit} from '@angular/core';
+import {WebsocketService} from './websocket.service';
+import {WsPackage} from './ws-package';
 import {ServerCtrlService} from './server-ctrl.service';
 import {WebsocketHandler} from './websocket-handler';
+import {CookieService} from 'angular2-cookie/core';
 
 @Component({
   selector: 'app-root',
@@ -18,60 +19,48 @@ export class AppComponent implements OnInit {
   playlist;
   @Input() requestUri: string;
 
-  // Player, should be refactored into it's own component later on
-  currentMethod = 'Play';
-  currentTrack;
+  submitPending = false;
+  @Input() loggingIn = true;
 
+  @Input() newUserName: string;
+  @Input() newUserPassword: string;
 
-  constructor(private serverCtrlService: ServerCtrlService) {
-    serverCtrlService.wsPackages.subscribe(msg => {
+  username;
+
+  constructor(private wsService: ServerCtrlService) {
+    wsService.wsPackages.subscribe(msg => {
       console.log(msg);
 
       switch (msg.method) {
         case 'get':
-          WebsocketHandler.get(this, msg);
+          WebsocketHandler.get(msg);
           break;
 
         case 'post':
-          WebsocketHandler.post(this, msg);
+          WebsocketHandler.post(msg);
           break;
 
         case 'patch':
-          WebsocketHandler.patch(this, msg);
+          WebsocketHandler.patch(msg);
           break;
 
         case 'delete':
-          WebsocketHandler.delete(this, msg);
+          WebsocketHandler.delete(msg);
           break;
       }
     });
   }
 
-  onPlayerMethod(): void {
-    if (this.currentMethod === 'Play') {
-      this.serverCtrlService.wsPackages.next(
-        new WsPackage('post', 'player/control/pause', null)
-      );
-
-    } else {
-      this.serverCtrlService.wsPackages.next(
-        new WsPackage('post', 'player/control/play', null)
-      );
-    }
+  ngOnInit(): void {
+    WebsocketHandler.app = this;
   }
-
-  public setCurrentTrack(track): void {
-    this.currentTrack = track;
-  }
-  // End of Player section
 
   // Playlist section
   voteTrack(track, vote): void {
-    this.serverCtrlService.wsPackages.next(
+    this.wsService.wsPackages.next(
       new WsPackage('patch', 'track/vote', {
         id: track.id,
-        vote: vote,
-        userID: 'placeholder'
+        vote: vote
       }));
   }
 
@@ -79,34 +68,65 @@ export class AppComponent implements OnInit {
     this.playlist = tracks;
   }
 
-  // on init of the app
-  ngOnInit(): void {
-  }
-
   reload(): void {
     // Fetch current track
-    this.serverCtrlService.wsPackages.next(
+    this.wsService.wsPackages.next(
       new WsPackage('get', 'player/current', null));
 
     // Fetch playlist
-    this.serverCtrlService.wsPackages.next(
+    this.wsService.wsPackages.next(
       new WsPackage('get', 'queue/all', null));
+
+    // Fetch player state
+    this.wsService.wsPackages.next(
+      new WsPackage('get', 'player/state', null));
   }
 
   // Submit section
 
   submitRequest(): void {
     if (this.requestUri) {
-      if (this.serverCtrlService.wsPackages.next(
+      this.wsService.send(
          new WsPackage('post', 'queue/uri', {
-           uri: this.requestUri,
-           userID: 'placeholder'
+           uri: this.requestUri
          })
-        )) {
-        this.requestUri = null;
-      }
+        );
+      this.submitPending = true;
     } else {
       alert('Please enter a uri');
+    }
+  }
+
+  setUsername(username): void {
+    this.username = username;
+  }
+
+  login(): void {
+    this.loggingIn = true;
+  }
+
+  logout(): void {
+    let token;
+    if (token = new CookieService().get('token')) {
+      this.wsService.send(
+        new WsPackage('delete', 'user/logout', {
+          token: token
+        })
+      );
+    }
+  }
+
+  registerNewUser(): void {
+    if (this.newUserName && this.newUserPassword) {
+      this.wsService.send(
+        new WsPackage('post', 'user/register', {
+          username: this.newUserName,
+          password: this.newUserPassword
+        })
+      );
+
+      this.newUserName = null;
+      this.newUserPassword = null;
     }
   }
 }

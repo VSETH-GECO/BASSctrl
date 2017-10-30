@@ -1,27 +1,68 @@
-<h2>{{title}}</h2>
+<mat-toolbar color="primary">
+  <span>{{title}}</span>
 
-<div *ngIf="currentTrack">
-  <h2>Player</h2>
+  <div class="spacer"></div>
 
-  <p>Current Track:</p>
-  <div><label>id:</label>{{currentTrack.id}}</div>
-  <div><label>title:</label>{{currentTrack.title}}</div>
-  <button (click)="onPlayerMethod()">{{currentMethod}}</button>
-  <button (click)="voteTrack(currentTrack, 1)">Upvote</button>
-  <button (click)="voteTrack(currentTrack, -1)">Downvote</button>
-</div>
+  <div *ngIf="username">
+    <button mat-button [matMenuTriggerFor]="menu">
+      <span>{{username}} </span>
+      <mat-icon>verified_user</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="addUser()">Add user</button>
+      <button mat-menu-item (click)="logout()">Logout</button>
+    </mat-menu>
+  </div>
+  <div *ngIf="!username">
+    <button mat-icon-button (click)="login()">
+      <mat-icon>input</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
 
-<div *ngIf="playlist">
-  <ul>
-    <li *ngFor="let track of playlist" class="collection-item">
-      {{track.title}} - {{track.votes}} -
-      <button (click)="voteTrack(track, 1)">Upvote</button>
-      <button (click)="voteTrack(track, -1)">Downvote</button>
-    </li>
-  </ul>
-</div>
+<div class="real-body">
+  <div *ngIf="!loggingIn">
+    <app-player></app-player>
 
-<div>
-  <input type="text" [(ngModel)]="requestUri" placeholder="uri"/>
-  <button (click)="submitRequest()">Submit</button>
+    <div *ngIf="playlist">
+      <mat-list>
+        <mat-list-item *ngFor="let track of playlist" class="collection-item">
+          {{track.title}} - {{track.votes}} -
+          <button mat-icon-button (click)="voteTrack(track, 1)">
+            <mat-icon>thumb_up</mat-icon>
+          </button>
+          <button mat-icon-button (click)="voteTrack(track, -1)">
+            <mat-icon>thumb_down</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </div>
+
+    <div *ngIf="submitPending">
+      <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
+    </div>
+    <div *ngIf="!submitPending">
+      <form class="uri-form">
+        <mat-form-field class="uri-form-input">
+          <input matInput placeholder="URI" [(ngModel)]="requestUri" name="uriInput">
+          <button mat-icon-button (click)="submitRequest()" matSuffix>
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+
+  <app-login *ngIf="loggingIn"></app-login>
+
+  <form>
+    <mat-form-field>
+      <input matInput placeholder="Username" [(ngModel)]="newUserName" name="newUserName">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Password" [(ngModel)]="newUserPassword" name="newUserPassword" type="password">
+    </mat-form-field>
+
+    <button mat-raised-button (click)="registerNewUser()">Register</button>
+  </form>
 </div>

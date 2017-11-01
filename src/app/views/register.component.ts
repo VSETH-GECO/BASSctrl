@@ -1,17 +1,16 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ServerCtrlService} from './server-ctrl.service';
-import {WsPackage} from './ws-package';
-import {WebsocketHandler} from './websocket-handler';
+import {Component, Input} from '@angular/core';
+import {WsPackage} from '../socket/ws-package';
+import {WebSocketService} from '../socket/websocket.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: '/register.component.html',
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
   @Input() newUserName: string;
   @Input() newUserPassword: string;
 
-  constructor(private wsService: ServerCtrlService) {}
+  constructor(private wsService: WebSocketService) {}
 
   registerNewUser(): void {
     if (this.newUserName && this.newUserPassword) {
@@ -26,9 +25,4 @@ export class RegisterComponent implements OnInit {
       this.newUserPassword = null;
     }
   }
-
-  ngOnInit(): void {
-    WebsocketHandler.reg = this;
-  }
-
 }

@@ -4,10 +4,10 @@ import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 
 import {AppComponent} from './app.component';
-import {LoginComponent} from './login.component';
-import {PlayerComponent} from './player.component';
-import {MainViewComponent} from './main-view.component';
-import {RegisterComponent} from './register.component';
+import {LoginComponent} from './views/login.component';
+import {PlayerComponent} from './views/player.component';
+import {MainViewComponent} from './views/main-view.component';
+import {RegisterComponent} from './views/register.component';
 
 import {
   MatButtonModule,
@@ -24,6 +24,7 @@ import {
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CookieService} from 'angular2-cookie/core';
+import {PlaylistComponent} from './views/playlist.component';
 
 RouterModule.forRoot([
   {
@@ -38,6 +39,7 @@ RouterModule.forRoot([
     MainViewComponent,
     RegisterComponent,
     PlayerComponent,
+    PlaylistComponent,
     LoginComponent
   ],
   imports: [

@@ -1,5 +1,5 @@
 <mat-toolbar color="primary">
-  <span>{{title}}</span>
+  <span [routerLink]="['/main']">{{title}}</span>
 
   <div class="spacer"></div>
 
@@ -9,7 +9,7 @@
       <mat-icon>verified_user</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="addUser()">Add user</button>
+      <a mat-menu-item [routerLink]="['/register']">Add user</a>
       <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
   </div>
@@ -19,6 +19,7 @@
     </a>
   </div>
 </mat-toolbar>
+<!-- TODO put me in a separate component, thx-->
 
 <div class="real-body">
   <router-outlet></router-outlet>

@@ -1,5 +1,3 @@
-<app-player></app-player>
-
 <div *ngIf="playlist">
   <mat-list>
     <mat-list-item *ngFor="let track of playlist" class="collection-item">
@@ -18,13 +16,12 @@
   <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
 </div>
 <div *ngIf="!submitPending">
-  <form class="uri-form">
+  <form class="uri-form" (ngSubmit)="submitRequest()">
     <mat-form-field class="uri-form-input">
-      <input matInput placeholder="URI" [(ngModel)]="requestUri" name="uriInput">
-      <button mat-icon-button (click)="submitRequest()" matSuffix>
+      <input matInput placeholder="URI" [(ngModel)]="requestUri" name="uriInput" autofocus>
+      <button mat-icon-button matSuffix type="submit">
         <mat-icon>send</mat-icon>
       </button>
     </mat-form-field>
   </form>
 </div>
-

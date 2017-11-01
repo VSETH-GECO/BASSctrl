@@ -1,132 +1,57 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {WebsocketService} from './websocket.service';
-import {WsPackage} from './ws-package';
-import {ServerCtrlService} from './server-ctrl.service';
-import {WebsocketHandler} from './websocket-handler';
-import {CookieService} from 'angular2-cookie/core';
+import {Component} from '@angular/core';
+import {WebSocketService} from './socket/websocket.service';
+import {WsPackage} from './socket/ws-package';
+import {WsHandlerService} from './socket/ws-handler.service';
+import {LoginService} from './views/login.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   providers: [
-    WebsocketService,
-    ServerCtrlService
+    WebSocketService,
+    WsHandlerService,
+    LoginService
   ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'BASS control';
-  playlist;
-  @Input() requestUri: string;
+  username: string;
 
-  submitPending = false;
-  @Input() loggingIn = true;
+  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService, private loginService: LoginService) {
 
-  @Input() newUserName: string;
-  @Input() newUserPassword: string;
+    this.wsService.send(new WsPackage('post', 'alive', null));
 
-  username;
-
-  constructor(private wsService: ServerCtrlService) {
     wsService.wsPackages.subscribe(msg => {
-      console.log(msg);
+      // DEBUG console.log(msg);
 
       switch (msg.method) {
         case 'get':
-          WebsocketHandler.get(msg);
+          wsHandler.get(msg);
           break;
 
         case 'post':
-          WebsocketHandler.post(msg);
+          wsHandler.post(msg);
           break;
 
         case 'patch':
-          WebsocketHandler.patch(msg);
+          wsHandler.patch(msg);
           break;
 
         case 'delete':
-          WebsocketHandler.delete(msg);
+          wsHandler.delete(msg);
           break;
+      }
+    });
+
+    wsHandler.appSubject.subscribe(data => {
+      if (!(typeof data.username === 'undefined')) {
+        this.username = data.username;
       }
     });
   }
 
-  ngOnInit(): void {
-    WebsocketHandler.app = this;
-  }
-
-  // Playlist section
-  voteTrack(track, vote): void {
-    this.wsService.wsPackages.next(
-      new WsPackage('patch', 'track/vote', {
-        id: track.id,
-        vote: vote
-      }));
-  }
-
-  public setPlaylist(tracks): void {
-    this.playlist = tracks;
-  }
-
-  reload(): void {
-    // Fetch current track
-    this.wsService.wsPackages.next(
-      new WsPackage('get', 'player/current', null));
-
-    // Fetch playlist
-    this.wsService.wsPackages.next(
-      new WsPackage('get', 'queue/all', null));
-
-    // Fetch player state
-    this.wsService.wsPackages.next(
-      new WsPackage('get', 'player/state', null));
-  }
-
-  // Submit section
-
-  submitRequest(): void {
-    if (this.requestUri) {
-      this.wsService.send(
-         new WsPackage('post', 'queue/uri', {
-           uri: this.requestUri
-         })
-        );
-      this.submitPending = true;
-    } else {
-      alert('Please enter a uri');
-    }
-  }
-
-  setUsername(username): void {
-    this.username = username;
-  }
-
-  login(): void {
-    this.loggingIn = true;
-  }
-
   logout(): void {
-    let token;
-    if (token = new CookieService().get('token')) {
-      this.wsService.send(
-        new WsPackage('delete', 'user/logout', {
-          token: token
-        })
-      );
-    }
-  }
-
-  registerNewUser(): void {
-    if (this.newUserName && this.newUserPassword) {
-      this.wsService.send(
-        new WsPackage('post', 'user/register', {
-          username: this.newUserName,
-          password: this.newUserPassword
-        })
-      );
-
-      this.newUserName = null;
-      this.newUserPassword = null;
-    }
+    this.loginService.logout();
   }
 }

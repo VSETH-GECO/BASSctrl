@@ -6,7 +6,7 @@ import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  templateUrl: '/login.component.html',
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
   @Input() username: string;

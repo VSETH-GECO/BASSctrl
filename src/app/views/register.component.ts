@@ -4,7 +4,7 @@ import {WebSocketService} from '../socket/websocket.service';
 
 @Component({
   selector: 'app-register',
-  templateUrl: '/register.component.html',
+  templateUrl: './register.component.html',
 })
 export class RegisterComponent {
   @Input() newUserName: string;

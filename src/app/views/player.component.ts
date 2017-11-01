@@ -21,7 +21,7 @@ class Track {
 
 @Component({
   selector: 'app-player',
-  templateUrl: '/player.component.html',
+  templateUrl: './player.component.html',
   styleUrls: ['../app.component.css'],
 })
 export class PlayerComponent implements OnInit {

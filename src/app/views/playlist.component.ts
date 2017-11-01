@@ -2,6 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {WsHandlerService} from '../socket/ws-handler.service';
 import {WebSocketService} from '../socket/websocket.service';
 import {WsPackage} from '../socket/ws-package';
+import {MatSnackBar} from '@angular/material';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-playlist',
@@ -13,7 +15,7 @@ export class PlaylistComponent implements OnInit {
   submitPending = false;
   @Input() requestUri: string;
 
-  constructor(private wsService: WebSocketService, wsHandler: WsHandlerService) {
+  constructor(private wsService: WebSocketService, wsHandler: WsHandlerService, private snackBar: MatSnackBar, private router: Router) {
     wsHandler.playlistSubject.subscribe(data => {
       if (!(typeof data.playlist === 'undefined')) {
         this.playlist = data.playlist;
@@ -26,6 +28,21 @@ export class PlaylistComponent implements OnInit {
       }
       if (data.isReady) {
         this.wsService.send(new WsPackage('get', 'queue/all', null));
+      }
+      if (data.response) {
+        if (data.response === 'unauthorized') {
+          this.openSnackBar('You need to login.', 'Login', 5000);
+        }
+
+        if (data.response === 'success') {
+          this.openSnackBar('Success', null, 1500);
+          this.submitPending = false;
+        }
+
+        if (data.response === 'no matches') {
+          this.openSnackBar('No matches', null, 2000);
+          this.submitPending = false;
+        }
       }
 
     });
@@ -52,8 +69,20 @@ export class PlaylistComponent implements OnInit {
       );
       this.submitPending = true;
     } else {
-      // TODO Snackbar
-      alert('Please enter a uri');
+      this.openSnackBar('Please enter a uri', null, 2000);
     }
+  }
+
+  openSnackBar(message, action, duration: number): void {
+    const onAction = this.snackBar.open(message, action, {
+      duration: duration,
+      verticalPosition: 'top',
+    }).onAction();
+
+    onAction.subscribe(() => {
+      this.router.navigateByUrl('/login');
+    });
+
+    this.submitPending = false;
   }
 }

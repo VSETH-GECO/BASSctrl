@@ -8,6 +8,7 @@ export class WsHandlerService {
   public loginSubject = new Subject<any>();
   public playerSubject = new Subject<any>();
   public playlistSubject = new Subject<any>();
+  public registerSubject = new Subject<any>();
 
   constructor(private loginService: LoginService) {}
 
@@ -17,7 +18,7 @@ export class WsHandlerService {
 
     switch (msg.type) {
       case 'ack':
-        this.playlistSubject.next({requestUri: null, submitPending: false});
+        this.playlistSubject.next({response: 'success'});
         break;
 
       case 'queue/all':
@@ -50,16 +51,22 @@ export class WsHandlerService {
         break;
 
       case 'user/unauthorized':
-        if (msg.data.type === 'queue/uri') {
-          this.playlistSubject.next({submitPending: false});
-          // TODO Snackbar and somewhere else pl0x
-          alert(msg.data.message);
+        switch (msg.data.type) {
+          case 'queue/uri':
+            this.playlistSubject.next({response: 'unauthorized'});
+            break;
+
+          case 'user/register':
+            this.registerSubject.next({response: 'unauthorized'});
+            break;
         }
         break;
 
       case 'err':
         if (msg.data.message === 'No matches found') {
-          this.playlistSubject.next({submitPending: null});
+          this.playlistSubject.next({response: 'no matches'});
+        } else {
+          this.playlistSubject.next({response: 'no matches'});
         }
     }
   }

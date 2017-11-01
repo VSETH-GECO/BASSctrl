@@ -19,6 +19,7 @@ import {
   MatMenuModule,
   MatProgressBarModule,
   MatProgressSpinnerModule,
+  MatSnackBarModule,
   MatToolbarModule
 } from '@angular/material';
 
@@ -56,6 +57,7 @@ RouterModule.forRoot([
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    MatSnackBarModule,
     RouterModule.forRoot([
       {
         path: 'login',

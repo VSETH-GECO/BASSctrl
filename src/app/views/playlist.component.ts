@@ -1,24 +1,32 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {WsHandlerService} from '../socket/ws-handler.service';
 import {WebSocketService} from '../socket/websocket.service';
 import {WsPackage} from '../socket/ws-package';
 import {MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
+import {DataSource} from '@angular/cdk/collections';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
+import {Track} from '../util/track';
 
 @Component({
   selector: 'app-playlist',
   templateUrl: './playlist.component.html',
   styleUrls: ['../app.component.css']
 })
-export class PlaylistComponent implements OnInit {
+export class PlaylistComponent {
   playlist;
+  playlistUpdate = new Subject<any>();
   submitPending = false;
   @Input() requestUri: string;
+  displayedColumns = ['title', 'user', 'votes', 'actions'];
+  dataSource = new PlaylistDataSource(this);
 
   constructor(private wsService: WebSocketService, wsHandler: WsHandlerService, private snackBar: MatSnackBar, private router: Router) {
     wsHandler.playlistSubject.subscribe(data => {
       if (!(typeof data.playlist === 'undefined')) {
-        this.playlist = data.playlist;
+        this.playlist = data.playlist.length === 0 ? null : data.playlist;
+        this.playlistUpdate.next(data.playlist);
       }
       if (!(typeof data.submitPending === 'undefined')) {
         this.submitPending = data.submitPending;
@@ -49,7 +57,7 @@ export class PlaylistComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  update(): void {
     this.wsService.send(new WsPackage('get', 'queue/all', null));
   }
 
@@ -58,6 +66,13 @@ export class PlaylistComponent implements OnInit {
       new WsPackage('patch', 'track/vote', {
         id: track.id,
         vote: vote
+      }));
+  }
+
+  favorite(track): void {
+    this.wsService.send(
+      new WsPackage('patch', 'track/vote', {
+        id: track.id
       }));
   }
 
@@ -84,4 +99,17 @@ export class PlaylistComponent implements OnInit {
       this.router.navigateByUrl('/login');
     });
   }
+}
+
+export class PlaylistDataSource extends DataSource<any> {
+  constructor(private plComp: PlaylistComponent) {
+    super();
+  }
+
+  connect(): Observable<Track[]> {
+    this.plComp.update();
+    return this.plComp.playlistUpdate;
+  }
+
+  disconnect() {}
 }

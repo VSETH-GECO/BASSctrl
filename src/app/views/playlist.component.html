@@ -1,5 +1,44 @@
 <div *ngIf="playlist">
-  <mat-list>
+  <div class="mat-elevation-z2">
+    <mat-table #table [dataSource]="dataSource">
+
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+        <mat-cell *matCellDef="let track"> {{track.title}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="user" class="pl-user">
+        <mat-header-cell *matHeaderCellDef> User </mat-header-cell>
+        <mat-cell *matCellDef="let track"> {{track.userName}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="votes">
+        <mat-header-cell *matHeaderCellDef> Votes </mat-header-cell>
+        <mat-cell *matCellDef="let track"> {{track.votes}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let track">
+          <button mat-icon-button (click)="voteTrack(track, 1)">
+            <mat-icon>thumb_up</mat-icon>
+          </button>
+          <button mat-icon-button (click)="voteTrack(track, -1)">
+            <mat-icon>thumb_down</mat-icon>
+          </button>
+          <button mat-icon-button (click)="favorite(track)">
+            <mat-icon>star_border</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+  </div>
+
+  <!-- <mat-list>
     <mat-list-item *ngFor="let track of playlist" class="collection-item">
       {{track.title}} - {{track.votes}} -
       <button mat-icon-button (click)="voteTrack(track, 1)">
@@ -9,7 +48,7 @@
         <mat-icon>thumb_down</mat-icon>
       </button>
     </mat-list-item>
-  </mat-list>
+  </mat-list> -->
 </div>
 
 <div *ngIf="submitPending">

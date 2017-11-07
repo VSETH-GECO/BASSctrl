@@ -4,7 +4,7 @@
       <div mat-card-avatar class="player-thumbnail"
            [ngStyle]="{'background-image': 'url(' + track.thumbnail + ')'}"></div>
       <mat-card-title>{{track.title}}</mat-card-title>
-      <mat-card-subtitle>Submitted by {{track.userID}}</mat-card-subtitle>
+      <mat-card-subtitle>Submitted by {{track.userName}}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       <mat-progress-bar [value]="track.percent">

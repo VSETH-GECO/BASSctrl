@@ -17,11 +17,24 @@
 }
 
 .player-thumbnail {
-  /*background-image: url(https://i.ytimg.com/vi/1vdBS4Fq5jM/hqdefault.jpg);*/
   background-size: cover;
 }
 
 .submit-pending {
   width: 20px;
   height: 20px;
+}
+
+.mat-cell:nth-child(2),
+.mat-header-cell:nth-child(2) {
+  flex: 0 0 10%;
+}
+
+.mat-cell:nth-child(3),
+.mat-header-cell:nth-child(3) {
+  flex: 0 0 5%;
+}
+.mat-cell:nth-child(4),
+.mat-header-cell:nth-child(4) {
+  flex: 0 0 15%;
 }

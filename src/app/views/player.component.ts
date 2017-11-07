@@ -3,21 +3,7 @@ import {WsPackage} from '../socket/ws-package';
 import {WebSocketService} from '../socket/websocket.service';
 import {WsHandlerService} from '../socket/ws-handler.service';
 import {Observable} from 'rxjs/Observable';
-
-class Track {
-  id: number;
-  uri: string;
-  userID: string;
-  title: string; // is used in the html file...
-  votes: number;
-  length: number;
-  position: number;
-
-  thumbnail: string;
-  percent: number;
-  posString: string;
-  startAt: number;
-}
+import {Track} from '../util/track';
 
 @Component({
   selector: 'app-player',

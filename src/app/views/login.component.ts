@@ -3,6 +3,7 @@ import {WsPackage} from '../socket/ws-package';
 import {WebSocketService} from '../socket/websocket.service';
 import {WsHandlerService} from '../socket/ws-handler.service';
 import {Router} from '@angular/router';
+import {MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-login',
@@ -13,9 +14,21 @@ export class LoginComponent {
   @Input() password: string;
   @Input() loggingIn: boolean;
 
-  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService, private router: Router) {
-    wsHandler.loginSubject.subscribe(() => {
-      router.navigateByUrl('/main');
+  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService,
+              private snackBar: MatSnackBar, private router: Router) {
+    wsHandler.loginSubject.subscribe(data => {
+      if (data.response) {
+        switch (data.response) {
+          case 'success':
+            this.openSnackBar('Logged in', null, 2000);
+            router.navigateByUrl('/main');
+            break;
+
+          case 'invalid token':
+            this.openSnackBar('Invalid token', null, 2000);
+            break;
+        }
+      }
     });
   }
 
@@ -29,7 +42,14 @@ export class LoginComponent {
         })
       );
     } else {
-      alert('Enter both username and password to proceed');
+      this.openSnackBar('Enter both username and password to proceed', null, 2000);
     }
+  }
+
+  openSnackBar(message, action, duration: number): void {
+    this.snackBar.open(message, action, {
+      duration: duration,
+      verticalPosition: 'top',
+    });
   }
 }

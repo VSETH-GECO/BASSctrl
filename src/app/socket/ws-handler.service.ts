@@ -38,7 +38,7 @@ export class WsHandlerService {
       case 'user/token':
         this.loginService.setToken(msg.data.token);
         this.appSubject.next({username: msg.data.username});
-        this.loginSubject.next();
+        this.loginSubject.next({response: 'success'});
         break;
 
       case 'user/logout':
@@ -66,7 +66,7 @@ export class WsHandlerService {
         if (msg.data.message === 'No matches found') {
           this.playlistSubject.next({response: 'no matches'});
         } else {
-          this.playlistSubject.next({response: 'no matches'});
+          this.loginSubject.next({response: 'invalid token'});
         }
     }
   }

@@ -32,6 +32,7 @@ export class PlaylistComponent implements OnInit {
       if (data.response) {
         if (data.response === 'unauthorized') {
           this.openSnackBar('You need to login.', 'Login', 5000);
+          this.submitPending = false;
         }
 
         if (data.response === 'success') {
@@ -82,7 +83,5 @@ export class PlaylistComponent implements OnInit {
     onAction.subscribe(() => {
       this.router.navigateByUrl('/login');
     });
-
-    this.submitPending = false;
   }
 }

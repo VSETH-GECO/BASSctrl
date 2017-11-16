@@ -26,6 +26,7 @@ export class WsHandlerService {
             this.appSubject.next({error: error});
             throw new Error(error);
           } else {
+            this.loginService.loginWToken();
             this.appSubject.next({isReady: true});
           }
         }
@@ -78,7 +79,7 @@ export class WsHandlerService {
   public queue(msg: WsPackage): void {
     switch (msg.action) {
       case Action.SUCCESS:
-        this.queueSubject.next({action: Action.SUCCESS,});
+        this.queueSubject.next({action: Action.SUCCESS});
         break;
 
       case Action.ERROR:
@@ -98,7 +99,7 @@ export class WsHandlerService {
   public player(msg: WsPackage): void {
     switch (msg.action) {
       case Action.DATA:
-        this.playerSubject.next({type: 'data', status: msg.data.state, track: msg.data.track});
+        this.playerSubject.next({type: 'data', state: msg.data.state, track: msg.data.track});
         break;
 
       default:

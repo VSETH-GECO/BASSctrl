@@ -9,8 +9,9 @@
       <mat-icon>verified_user</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <a mat-menu-item [routerLink]="['/register']">Add user</a>
+      <button mat-menu-item [routerLink]="['/register']">Add user</button>
       <button mat-menu-item (click)="logout()">Logout</button>
+      <button mat-menu-item [routerLink]="['/register']">Add user</button>
     </mat-menu>
   </div>
   <div *ngIf="!username">

@@ -29,6 +29,20 @@ export class PlayerComponent implements OnInit {
         this.setTrack(data.track);
       }
     });
+
+
+
+    wsHandler.favoritesSubject.subscribe(data => {
+      if (data.action) {
+        switch (data.action) {
+          case Action.DATA:
+            if (this.track && data.favorites.find(tr => tr.uri === this.track.uri)) {
+              this.track.isFavorite = true;
+            }
+            break;
+        }
+      }
+    });
   }
 
   ngOnInit(): void {

@@ -35,8 +35,9 @@ export class PlaylistComponent implements OnInit {
       if (data.action) {
         switch (data.action) {
           case Action.DATA:
-            this.playlist = data.playlist.length === 0 ? null : data.playlist;
-            this.playlistUpdate.next(data.playlist);
+            this.playlist = data.queue.length === 0 ? null : data.queue;
+            this.playlistUpdate.next(data.queue);
+            this.updateFavorites();
             break;
 
           case Action.SUCCESS:
@@ -55,6 +56,7 @@ export class PlaylistComponent implements OnInit {
         switch (data.action) {
           case Action.DATA:
             this.favorites = data.favorites;
+            this.updateFavorites();
             break;
         }
       }
@@ -92,6 +94,20 @@ export class PlaylistComponent implements OnInit {
     }
 
     track.isFavorite = !track.isFavorite;
+  }
+
+  updateFavorites(): void {
+    if (!this.favorites || !this.playlist) {
+      return;
+    }
+
+    let track: Track;
+    for (const fav of this.favorites) {
+      track = this.playlist.find(tr => tr.uri === fav.uri);
+      if (track) {
+        track.isFavorite = true;
+      }
+    }
   }
 
   submitRequest(uri?: string): void {

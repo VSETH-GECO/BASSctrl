@@ -1,21 +1,23 @@
-import {Component, Input} from '@angular/core';
-import {WsHandlerService} from '../socket/ws-handler.service';
-import {WebSocketService} from '../socket/websocket.service';
-import {WsPackage} from '../socket/ws-package';
+import {Component, Input, OnInit} from '@angular/core';
+import {WsHandlerService} from '../services/socket/ws-handler.service';
+import {WebSocketService} from '../services/socket/websocket.service';
+import {WsPackage} from '../services/socket/ws-package';
 import {MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
 import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Track} from '../util/track';
+import {Action, Resource} from '../services/socket/api';
 
 @Component({
   selector: 'app-playlist',
   templateUrl: './playlist.component.html',
   styleUrls: ['../app.component.css']
 })
-export class PlaylistComponent {
+export class PlaylistComponent implements OnInit {
   playlist;
+  favorites;
   playlistUpdate = new Subject<any>();
   submitPending = false;
   @Input() requestUri: string;
@@ -23,63 +25,83 @@ export class PlaylistComponent {
   dataSource = new PlaylistDataSource(this);
 
   constructor(private wsService: WebSocketService, wsHandler: WsHandlerService, private snackBar: MatSnackBar, private router: Router) {
-    wsHandler.playlistSubject.subscribe(data => {
-      if (!(typeof data.playlist === 'undefined')) {
-        this.playlist = data.playlist.length === 0 ? null : data.playlist;
-        this.playlistUpdate.next(data.playlist);
-      }
-      if (!(typeof data.submitPending === 'undefined')) {
-        this.submitPending = data.submitPending;
-      }
-      if (!(typeof data.requestUri === 'undefined')) {
-        this.requestUri = data.requestUri;
-      }
+    wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
-        this.wsService.send(new WsPackage('get', 'queue/all', null));
+        this.update();
       }
-      if (data.response) {
-        if (data.response === 'unauthorized') {
-          this.openSnackBar('You need to login.', 'Login', 5000);
-          this.submitPending = false;
-        }
+    });
 
-        if (data.response === 'success') {
-          this.openSnackBar('Success', null, 1500);
-          this.submitPending = false;
-        }
+    wsHandler.queueSubject.subscribe(data => {
+      if (data.action) {
+        switch (data.action) {
+          case Action.DATA:
+            this.playlist = data.playlist.length === 0 ? null : data.playlist;
+            this.playlistUpdate.next(data.playlist);
+            break;
 
-        if (data.response === 'no matches') {
-          this.openSnackBar('No matches', null, 2000);
-          this.submitPending = false;
+          case Action.SUCCESS:
+            this.requestUri = null;
+            this.submitPending = false;
+            break;
+
+          case Action.ERROR:
+            this.submitPending = false;
         }
       }
+    });
 
+    wsHandler.favoritesSubject.subscribe(data => {
+      if (data.action) {
+        switch (data.action) {
+          case Action.DATA:
+            this.favorites = data.favorites;
+            break;
+        }
+      }
     });
   }
 
+  ngOnInit(): void {
+    this.update();
+  }
   update(): void {
-    this.wsService.send(new WsPackage('get', 'queue/all', null));
+    this.wsService.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
+    this.wsService.send(new WsPackage(Resource.QUEUE, Action.GET, null));
   }
 
   voteTrack(track, vote): void {
     this.wsService.send(
-      new WsPackage('patch', 'track/vote', {
+      new WsPackage(Resource.TRACK, Action.VOTE, {
         id: track.id,
         vote: vote
       }));
   }
 
   favorite(track): void {
-    this.wsService.send(
-      new WsPackage('patch', 'track/vote', {
-        id: track.id
-      }));
+    if (track.isFavorite) {
+      this.wsService.send(
+        new WsPackage(Resource.FAVORITES, Action.DELETE, {
+          uri: track.uri
+        }));
+    } else {
+      this.wsService.send(
+        new WsPackage(Resource.FAVORITES, Action.ADD, {
+          title: track.title,
+          uri: track.uri
+        }));
+    }
+
+    track.isFavorite = !track.isFavorite;
   }
 
-  submitRequest(): void {
+  submitRequest(uri?: string): void {
+    if (uri) {
+      this.requestUri = uri;
+    }
+
     if (this.requestUri) {
       this.wsService.send(
-        new WsPackage('post', 'queue/uri', {
+        new WsPackage(Resource.QUEUE, Action.URI, {
           uri: this.requestUri
         })
       );
@@ -87,6 +109,10 @@ export class PlaylistComponent {
     } else {
       this.openSnackBar('Please enter a uri', null, 2000);
     }
+  }
+
+  openFavorites(): void {
+    this.router.navigateByUrl('/favorites');
   }
 
   openSnackBar(message, action, duration: number): void {

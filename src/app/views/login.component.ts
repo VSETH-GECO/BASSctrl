@@ -1,9 +1,10 @@
 import {Component, Input} from '@angular/core';
-import {WsPackage} from '../socket/ws-package';
-import {WebSocketService} from '../socket/websocket.service';
-import {WsHandlerService} from '../socket/ws-handler.service';
+import {WsPackage} from '../services/socket/ws-package';
+import {WebSocketService} from '../services/socket/websocket.service';
+import {WsHandlerService} from '../services/socket/ws-handler.service';
 import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material';
+import {Action, Resource} from '../services/socket/api';
 
 @Component({
   selector: 'app-login',
@@ -16,17 +17,18 @@ export class LoginComponent {
 
   constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService,
               private snackBar: MatSnackBar, private router: Router) {
-    wsHandler.loginSubject.subscribe(data => {
-      if (data.response) {
-        switch (data.response) {
-          case 'success':
+    wsHandler.userSubject.subscribe(data => {
+      if (data.action) {
+        switch (data.action) {
+          case Action.ERROR:
+            this.openSnackBar(data.message, null, 2000);
+            break;
+
+          case Action.LOGIN:
             this.openSnackBar('Logged in', null, 2000);
             router.navigateByUrl('/main');
             break;
 
-          case 'invalid token':
-            this.openSnackBar('Invalid token', null, 2000);
-            break;
         }
       }
     });
@@ -36,7 +38,7 @@ export class LoginComponent {
     if (this.username && this.password) {
 
       this.wsService.send(
-        new WsPackage('post', 'user/login', {
+        new WsPackage(Resource.USER, Action.LOGIN, {
           username: this.username,
           password: this.password
         })

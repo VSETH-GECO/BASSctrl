@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
-import {WebSocketService} from './socket/websocket.service';
-import {WsPackage} from './socket/ws-package';
-import {WsHandlerService} from './socket/ws-handler.service';
-import {LoginService} from './views/login.service';
+import {WebSocketService} from './services/socket/websocket.service';
+import {WsPackage} from './services/socket/ws-package';
+import {WsHandlerService} from './services/socket/ws-handler.service';
+import {LoginService} from './services/login.service';
+import {Action, Resource} from './services/socket/api';
 
 @Component({
   selector: 'app-root',
@@ -20,33 +21,46 @@ export class AppComponent {
 
   constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService, private loginService: LoginService) {
 
-    this.wsService.send(new WsPackage('post', 'alive', null));
+    this.wsService.send(new WsPackage(Resource.APP, Action.INFORM, null));
 
     wsService.wsPackages.subscribe(msg => {
-      // DEBUG console.log(msg);
-
-      switch (msg.method) {
-        case 'get':
-          wsHandler.get(msg);
+      let res: Resource;
+      res = msg.resource;
+      switch (res) {
+        case Resource.APP:
+          wsHandler.app(msg);
           break;
 
-        case 'post':
-          wsHandler.post(msg);
+        case Resource.USER:
+          wsHandler.user(msg);
           break;
 
-        case 'patch':
-          wsHandler.patch(msg);
+        case Resource.QUEUE:
+          wsHandler.queue(msg);
           break;
 
-        case 'delete':
-          wsHandler.delete(msg);
+        case Resource.TRACK:
+          wsHandler.track(msg);
+          break;
+
+        case Resource.PLAYER:
+          wsHandler.player(msg);
+          break;
+
+        case Resource.FAVORITES:
+          wsHandler.favorites(msg);
           break;
       }
     });
 
-    wsHandler.appSubject.subscribe(data => {
-      if (!(typeof data.username === 'undefined')) {
-        this.username = data.username;
+    wsHandler.userSubject.subscribe(data => {
+      if (data.action) {
+        if (data.action === Action.LOGIN) {
+          this.username = data.username;
+        }
+        if (data.action === Action.LOGOUT) {
+          this.username = null;
+        }
       }
     });
   }

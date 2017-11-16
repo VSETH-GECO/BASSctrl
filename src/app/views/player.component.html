@@ -21,6 +21,9 @@
       <button mat-icon-button (click)="voteTrack(-1)">
         <mat-icon>thumb_down</mat-icon>
       </button>
+      <button mat-icon-button (click)="favorite(track)">
+        <mat-icon>{{track.isFavorite ? 'star' : 'star_border'}}</mat-icon>
+      </button>
     </mat-card-actions>
   </mat-card>
 </div>

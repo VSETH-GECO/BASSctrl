@@ -1,0 +1,8 @@
+<mat-list>
+  <mat-list-item *ngFor="let track of favorites" (click)="submitRequest(track.uri)" class="favorite-list" style="cursor: pointer">
+    {{track.title}}
+    <div class="spacer"></div>
+    hi
+  </mat-list-item>
+</mat-list>
+

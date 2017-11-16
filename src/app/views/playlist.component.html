@@ -7,7 +7,7 @@
         <mat-cell *matCellDef="let track"> {{track.title}} </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="user" class="pl-user">
+      <ng-container matColumnDef="user">
         <mat-header-cell *matHeaderCellDef> User </mat-header-cell>
         <mat-cell *matCellDef="let track"> {{track.userName}} </mat-cell>
       </ng-container>
@@ -27,7 +27,7 @@
             <mat-icon>thumb_down</mat-icon>
           </button>
           <button mat-icon-button (click)="favorite(track)">
-            <mat-icon>star_border</mat-icon>
+            <mat-icon>{{track.isFavorite ? 'star' : 'star_border'}}</mat-icon>
           </button>
         </mat-cell>
       </ng-container>
@@ -37,30 +37,27 @@
     </mat-table>
 
   </div>
-
-  <!-- <mat-list>
-    <mat-list-item *ngFor="let track of playlist" class="collection-item">
-      {{track.title}} - {{track.votes}} -
-      <button mat-icon-button (click)="voteTrack(track, 1)">
-        <mat-icon>thumb_up</mat-icon>
-      </button>
-      <button mat-icon-button (click)="voteTrack(track, -1)">
-        <mat-icon>thumb_down</mat-icon>
-      </button>
-    </mat-list-item>
-  </mat-list> -->
 </div>
 
-<div *ngIf="submitPending">
+<div *ngIf="submitPending" class="footer">
   <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
 </div>
-<div *ngIf="!submitPending">
-  <form class="uri-form" (ngSubmit)="submitRequest()">
-    <mat-form-field class="uri-form-input">
-      <input matInput placeholder="URI" [(ngModel)]="requestUri" name="uriInput" autofocus>
-      <button mat-icon-button matSuffix type="submit">
-        <mat-icon>send</mat-icon>
-      </button>
-    </mat-form-field>
-  </form>
+
+<div *ngIf="!submitPending" class="footer">
+  <mat-grid-list cols="10" rowHeight="60px" class="test mat-elevation-z2" >
+    <mat-grid-tile colspan="4">
+      <form class="uri-form" (ngSubmit)="submitRequest()">
+        <mat-form-field class="uri-form-input">
+          <input matInput placeholder="URI" [(ngModel)]="requestUri" name="uriInput" autofocus>
+          <button mat-icon-button matSuffix type="submit">
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="1">
+      <button mat-icon-button (click)="openFavorites()" class="favorite-icon"><mat-icon>star</mat-icon></button>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="5"></mat-grid-tile>
+  </mat-grid-list>
 </div>

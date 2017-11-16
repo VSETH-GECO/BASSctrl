@@ -2,10 +2,11 @@ import {Injectable} from '@angular/core';
 import * as Rx from 'rxjs/Rx';
 import {WsPackage} from './ws-package';
 import {Subject} from 'rxjs/Subject';
+import {Action, Resource} from './api';
 
 export interface WSPackage {
-  method: string;
-  type: string;
+  resource: Resource;
+  action: Action;
   data: object;
 }
 
@@ -20,7 +21,7 @@ export class WebSocketService {
   public connect(url): Rx.Subject<MessageEvent> {
     if (!this.socket) {
       this.socket = this.create(url);
-      console.log('Connected to:', url);
+      //console.log('Connected to:', url);
     }
 
     return this.socket;
@@ -55,8 +56,8 @@ export class WebSocketService {
         .map((response: MessageEvent): WSPackage => {
           const pack = JSON.parse(response.data);
           return {
-            method: pack.method,
-            type: pack.type,
+            resource: Resource[<string>pack.resource.toUpperCase()],
+            action: Action[<string>pack.action.toUpperCase()],
             data: pack.data
           };
         });

@@ -8,11 +8,15 @@ import {LoginComponent} from './views/login.component';
 import {PlayerComponent} from './views/player.component';
 import {MainViewComponent} from './views/main-view.component';
 import {RegisterComponent} from './views/register.component';
+import {PlaylistComponent} from './views/playlist.component';
+import {FavoritesComponent} from './views/favorites.component';
 
 import {
   MatButtonModule,
   MatCardModule,
+  MatExpansionModule,
   MatFormFieldModule,
+  MatGridListModule,
   MatIconModule,
   MatInputModule,
   MatListModule,
@@ -21,12 +25,12 @@ import {
   MatProgressSpinnerModule,
   MatSnackBarModule,
   MatTableModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatTooltipModule
 } from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CookieService} from 'angular2-cookie/core';
-import {PlaylistComponent} from './views/playlist.component';
 
 RouterModule.forRoot([
   {
@@ -42,7 +46,8 @@ RouterModule.forRoot([
     RegisterComponent,
     PlayerComponent,
     PlaylistComponent,
-    LoginComponent
+    LoginComponent,
+    FavoritesComponent
   ],
   imports: [
     BrowserModule,
@@ -60,6 +65,9 @@ RouterModule.forRoot([
     MatMenuModule,
     MatSnackBarModule,
     MatTableModule,
+    MatGridListModule,
+    MatExpansionModule,
+    MatTooltipModule,
     RouterModule.forRoot([
       {
         path: 'login',
@@ -68,6 +76,10 @@ RouterModule.forRoot([
       {
         path: 'register',
         component: RegisterComponent
+      },
+      {
+        path: 'favorites',
+        component: FavoritesComponent
       },
       {
         path: 'main',

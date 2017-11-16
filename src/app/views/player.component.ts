@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {WsPackage} from '../socket/ws-package';
-import {WebSocketService} from '../socket/websocket.service';
-import {WsHandlerService} from '../socket/ws-handler.service';
+import {WsPackage} from '../services/socket/ws-package';
+import {WebSocketService} from '../services/socket/websocket.service';
+import {WsHandlerService} from '../services/socket/ws-handler.service';
 import {Observable} from 'rxjs/Observable';
 import {Track} from '../util/track';
+import {Action, Resource} from '../services/socket/api';
 
 @Component({
   selector: 'app-player',
@@ -16,22 +17,22 @@ export class PlayerComponent implements OnInit {
   methodIcon: string;
 
   constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService) {
-    wsHandler.playerSubject.subscribe(data => {
-      if (!(typeof data.track === 'undefined')) {
-        this.setTrack(data.track);
-      }
-      if (data.state) {
-        this.setState(data.state);
-      }
+    wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
-        this.wsService.send(new WsPackage('get', 'player/current', null));
-        this.wsService.send(new WsPackage('get', 'player/state', null));
+        this.wsService.send(new WsPackage(Resource.PLAYER, Action.GET, null));
+      }
+    });
+
+    wsHandler.playerSubject.subscribe(data => {
+      if (data.type && data.type === 'data') {
+        this.setState(data.state);
+        this.setTrack(data.track);
       }
     });
   }
 
   ngOnInit(): void {
-    this.wsService.send(new WsPackage('get', 'player/current', null));
+    this.wsService.send(new WsPackage(Resource.PLAYER, Action.GET, null));
   }
 
   private setState(state): void {
@@ -43,6 +44,7 @@ export class PlayerComponent implements OnInit {
 
       case 'paused':
         this.track.position = Date.now() - this.track.startAt;
+        this.updateTrackProgress();
 
         this.methodIcon = 'play_arrow';
         break;
@@ -92,21 +94,38 @@ export class PlayerComponent implements OnInit {
   onPlayerMethod(): void {
     if (this.state === 'playing') {
       this.wsService.wsPackages.next(
-        new WsPackage('patch', 'player/control', {state: 'pause'})
+        new WsPackage(Resource.PLAYER, Action.SET, {state: 'pause'})
       );
 
     } else {
       this.wsService.wsPackages.next(
-        new WsPackage('patch', 'player/control', {state: 'play'})
+        new WsPackage(Resource.PLAYER, Action.SET, {state: 'play'})
       );
     }
   }
 
   voteTrack(vote): void {
     this.wsService.send(
-      new WsPackage('patch', 'track/vote', {
+      new WsPackage(Resource.TRACK, Action.VOTE, {
         id: this.track.id,
         vote: vote
       }));
+  }
+
+  favorite(track): void {
+    if (track.isFavorite) {
+      this.wsService.send(
+        new WsPackage(Resource.FAVORITES, Action.DELETE, {
+          uri: track.uri
+        }));
+    } else {
+      this.wsService.send(
+        new WsPackage(Resource.FAVORITES, Action.ADD, {
+          title: track.title,
+          uri: track.uri
+        }));
+    }
+
+    track.isFavorite = !track.isFavorite;
   }
 }

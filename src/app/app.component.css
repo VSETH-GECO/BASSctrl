@@ -1,6 +1,16 @@
+.footer {
+  position: fixed; /* Set the navbar to fixed position */
+  bottom: 0; /* Position the navbar at the bottom of the page */
+  width: 100%;
+  z-index: 100000;
+  background: white;
+}
+
+.test {
+  padding-top: 2px;
+}
+
 .uri-form {
-  min-width: 200px;
-  max-width: 500px;
   width: 100%;
 }
 
@@ -8,12 +18,27 @@
   width: 100%;
 }
 
+.favorite-icon {
+  width: 100%;
+}
+
 .spacer {
   flex: 1 1 auto;
 }
 
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100000;
+}
+
+.header .title {
+  cursor: pointer;
+}
+
 .real-body {
-  margin: 8px;
+  margin: 64px 8px 60px;
 }
 
 .player-thumbnail {
@@ -37,4 +62,16 @@
 .mat-cell:nth-child(4),
 .mat-header-cell:nth-child(4) {
   flex: 0 0 15%;
+}
+
+.mat-table {
+  overflow: auto;
+}
+
+.favorite-list {
+  cursor: pointer;
+}
+
+.favorite-list:hover {
+  background: #f1f1f1;
 }

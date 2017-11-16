@@ -12,4 +12,5 @@ export class Track {
   percent: number;
   posString: string;
   startAt: number;
+  isFavorite: boolean;
 }

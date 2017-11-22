@@ -4,7 +4,6 @@ import {CookieService} from 'angular2-cookie/core';
 import {WebSocketService} from './socket/websocket.service';
 import {Action, Resource} from './socket/api';
 
-
 @Injectable()
 export class LoginService {
 

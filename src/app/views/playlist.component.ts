@@ -16,6 +16,7 @@ import {Action, Resource} from '../services/socket/api';
   styleUrls: ['../app.component.css']
 })
 export class PlaylistComponent implements OnInit {
+  userID;
   playlist;
   favorites;
   playlistUpdate = new Subject<any>();
@@ -31,6 +32,12 @@ export class PlaylistComponent implements OnInit {
       }
     });
 
+    wsHandler.userSubject.subscribe(data => {
+      if (data.action && data.action === Action.LOGIN) {
+        this.userID = data.userid;
+      }
+    });
+
     wsHandler.queueSubject.subscribe(data => {
       if (data.action) {
         switch (data.action) {
@@ -38,6 +45,7 @@ export class PlaylistComponent implements OnInit {
             this.playlist = data.queue.length === 0 ? null : data.queue;
             this.playlistUpdate.next(data.queue);
             this.updateFavorites();
+            this.updateVotes();
             break;
 
           case Action.SUCCESS:
@@ -66,12 +74,23 @@ export class PlaylistComponent implements OnInit {
   ngOnInit(): void {
     this.update();
   }
+
   update(): void {
     this.wsService.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
     this.wsService.send(new WsPackage(Resource.QUEUE, Action.GET, null));
   }
 
   voteTrack(track, vote): void {
+    if (this.userID) {
+      for (const voter of track.voters) {
+        if (voter[this.userID]) {
+          if (voter[this.userID] === vote) {
+            vote = 0;
+          }
+        }
+      }
+    }
+
     this.wsService.send(
       new WsPackage(Resource.TRACK, Action.VOTE, {
         id: track.id,
@@ -96,16 +115,29 @@ export class PlaylistComponent implements OnInit {
     track.isFavorite = !track.isFavorite;
   }
 
+  // FIXME remove previously favored tracks that aren't anymore
   updateFavorites(): void {
     if (!this.favorites || !this.playlist) {
       return;
     }
 
-    let track: Track;
+    let tracks: Track[];
     for (const fav of this.favorites) {
-      track = this.playlist.find(tr => tr.uri === fav.uri);
-      if (track) {
+      tracks = this.playlist.filter(tr => tr.uri === fav.uri);
+      for (const track of tracks) {
         track.isFavorite = true;
+      }
+    }
+  }
+
+  updateVotes(): void {
+    if (this.userID && this.playlist) {
+      for (const track of this.playlist) {
+        for (const voter of track.voters) {
+          if (voter[this.userID]) {
+            track.userVote = voter[this.userID];
+          }
+        }
       }
     }
   }

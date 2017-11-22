@@ -41,7 +41,7 @@ export class WsHandlerService {
     switch (msg.action) {
       case Action.DATA:
         if (msg.data) {
-          this.userSubject.next({action: Action.LOGIN, username: msg.data.username});
+          this.userSubject.next({action: Action.LOGIN, userid: msg.data.id, username: msg.data.username});
           this.loginService.setToken(msg.data.token);
         }
         break;
@@ -110,7 +110,7 @@ export class WsHandlerService {
   public favorites(msg: WsPackage): void {
     switch (msg.action) {
       case Action.SUCCESS:
-        this.favoritesSubject.next({action: Action.SUCCESS});
+        this.favoritesSubject.next({action: Action.SUCCESS, data: msg.data});
         break;
 
       case Action.ERROR:

@@ -12,9 +12,11 @@ import {Action, Resource} from '../services/socket/api';
   styleUrls: ['../app.component.css'],
 })
 export class PlayerComponent implements OnInit {
+  userID;
   track: Track;
   state: string;
   methodIcon: string;
+  favorites;
 
   constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService) {
     wsHandler.appSubject.subscribe(data => {
@@ -25,20 +27,25 @@ export class PlayerComponent implements OnInit {
 
     wsHandler.playerSubject.subscribe(data => {
       if (data.type && data.type === 'data') {
-        this.setState(data.state);
         this.setTrack(data.track);
+        this.setState(data.state);
+        this.updateFavorite();
+        this.updateVotes();
       }
     });
 
-
+    wsHandler.userSubject.subscribe(data => {
+      if (data.action && data.action === Action.LOGIN) {
+        this.userID = data.userid;
+      }
+    });
 
     wsHandler.favoritesSubject.subscribe(data => {
       if (data.action) {
         switch (data.action) {
           case Action.DATA:
-            if (this.track && data.favorites.find(tr => tr.uri === this.track.uri)) {
-              this.track.isFavorite = true;
-            }
+            this.favorites = data.favorites;
+            this.updateFavorite();
             break;
         }
       }
@@ -47,6 +54,12 @@ export class PlayerComponent implements OnInit {
 
   ngOnInit(): void {
     this.wsService.send(new WsPackage(Resource.PLAYER, Action.GET, null));
+  }
+
+  private updateFavorite(): void {
+    if (this.favorites && this.track && this.favorites.find(tr => tr.uri === this.track.uri)) {
+      this.track.isFavorite = true;
+    }
   }
 
   private setState(state): void {
@@ -105,6 +118,16 @@ export class PlayerComponent implements OnInit {
     this.track.posString = '[' + posDateTime(new Date(pos)) + '|' + posDateTime(new Date(this.track.length)) + ']';
   }
 
+  updateVotes(): void {
+    if (this.userID && this.track) {
+      for (const voter of this.track.voters) {
+        if (voter[this.userID]) {
+          this.track.userVote = voter[this.userID];
+        }
+      }
+    }
+  }
+
   onPlayerMethod(): void {
     if (this.state === 'playing') {
       this.wsService.wsPackages.next(
@@ -121,7 +144,7 @@ export class PlayerComponent implements OnInit {
   voteTrack(vote): void {
     this.wsService.send(
       new WsPackage(Resource.TRACK, Action.VOTE, {
-        id: this.track.id,
+        id: 0,
         vote: vote
       }));
   }

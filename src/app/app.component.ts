@@ -4,6 +4,7 @@ import {WsPackage} from './services/socket/ws-package';
 import {WsHandlerService} from './services/socket/ws-handler.service';
 import {LoginService} from './services/login.service';
 import {Action, Resource} from './services/socket/api';
+import {MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ export class AppComponent {
   title = 'BASS control';
   username: string;
 
-  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService, private loginService: LoginService) {
+  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService, private loginService: LoginService, private snackBar: MatSnackBar) {
 
     this.wsService.send(new WsPackage(Resource.APP, Action.INFORM, null));
 
@@ -63,9 +64,21 @@ export class AppComponent {
         }
       }
     });
+
+    wsHandler.appSubject.subscribe(data => {
+      if (data.action && data.action === Action.ERROR) {
+        this.openSnackBar(data.message, null, 2000);
+      }
+    });
   }
 
   logout(): void {
     this.loginService.logout();
+  }
+
+  openSnackBar(message, action, duration: number): void {
+    this.snackBar.open(message, action, {
+      duration: duration
+    });
   }
 }

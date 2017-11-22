@@ -1,25 +1,29 @@
-<mat-toolbar color="primary" class="header">
-  <span [routerLink]="['/main']" class="title">{{title}}</span>
+<div class="header">
+  <mat-toolbar color="primary">
+    <span [routerLink]="['/main']" class="title">{{title}}</span>
 
-  <div class="spacer"></div>
+    <div class="spacer"></div>
 
-  <div *ngIf="username">
-    <button mat-button [matMenuTriggerFor]="menu">
-      <span>{{username}} </span>
-      <mat-icon>verified_user</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item [routerLink]="['/register']">Add user</button>
-      <button mat-menu-item (click)="logout()">Logout</button>
-      <button mat-menu-item [routerLink]="['/register']">Add user</button>
-    </mat-menu>
-  </div>
-  <div *ngIf="!username">
-    <a mat-icon-button [routerLink]="['/login']">
-      <mat-icon>input</mat-icon>
-    </a>
-  </div>
-</mat-toolbar>
+    <div *ngIf="username">
+      <button mat-button [matMenuTriggerFor]="menu">
+        <span>{{username}} </span>
+        <mat-icon>verified_user</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item [routerLink]="['/register']">Add user</button>
+        <button mat-menu-item (click)="logout()">Logout</button>
+        <button mat-menu-item [routerLink]="['/register']">Add user</button>
+      </mat-menu>
+    </div>
+    <div *ngIf="!username">
+      <a mat-icon-button [routerLink]="['/login']">
+        <mat-icon>input</mat-icon>
+      </a>
+    </div>
+  </mat-toolbar>
+  <app-player></app-player>
+</div>
+<div class="subheader"></div>
 <!-- TODO put me in a separate component, thx-->
 
 <div class="real-body">

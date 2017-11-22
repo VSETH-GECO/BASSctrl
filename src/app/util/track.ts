@@ -5,6 +5,7 @@ export class Track {
   userName: string;
   title: string;
   votes: number;
+  voters: any;
   length: number;
   position: number;
 
@@ -13,4 +14,5 @@ export class Track {
   posString: string;
   startAt: number;
   isFavorite: boolean;
+  userVote: number;
 }

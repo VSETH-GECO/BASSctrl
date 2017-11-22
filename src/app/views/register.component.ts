@@ -47,8 +47,7 @@ export class RegisterComponent {
 
   openSnackBar(message) {
     this.snackBar.open(message, null, {
-      duration: 2000,
-      verticalPosition: 'top',
+      duration: 2000
     });
   }
 }

@@ -15,13 +15,13 @@ export class WebSocketService {
   constructor() {}
 
   private socket: Rx.Subject<MessageEvent>;
-  private SERVER_URL = 'wss://api.' + window.location.hostname.replace('dev.', '');
+  private SERVER_URL = 'ws://' + window.location.hostname + ':8455';
   public wsPackages: Subject<WSPackage>;
 
   public connect(url): Rx.Subject<MessageEvent> {
     if (!this.socket) {
       this.socket = this.create(url);
-      //console.log('Connected to:', url);
+      // console.log('Connected to:', url);
     }
 
     return this.socket;

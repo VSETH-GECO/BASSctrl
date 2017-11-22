@@ -1,7 +1,7 @@
 .footer {
   position: fixed; /* Set the navbar to fixed position */
   bottom: 0; /* Position the navbar at the bottom of the page */
-  width: 100%;
+  width: calc(100% - 16px); /* Sorry world */
   z-index: 100000;
   background: white;
 }
@@ -12,6 +12,8 @@
 
 .uri-form {
   width: 100%;
+  padding-left: 20px;
+  padding-top: 8px;
 }
 
 .uri-form-input {
@@ -33,12 +35,16 @@
   z-index: 100000;
 }
 
+.subheader {
+  height: 246px;
+}
+
 .header .title {
   cursor: pointer;
 }
 
 .real-body {
-  margin: 64px 8px 60px;
+  margin: 0px 8px 60px;
 }
 
 .player-thumbnail {
@@ -50,18 +56,27 @@
   height: 20px;
 }
 
+.mat-header-row {
+  padding-right: 0;
+}
+
+.mat-row {
+  padding-right: 0;
+}
+
 .mat-cell:nth-child(2),
 .mat-header-cell:nth-child(2) {
-  flex: 0 0 10%;
+  flex: 0 0 50px;
 }
 
 .mat-cell:nth-child(3),
 .mat-header-cell:nth-child(3) {
-  flex: 0 0 5%;
+  flex: 0 0 31px;
+  text-align: center;
 }
 .mat-cell:nth-child(4),
 .mat-header-cell:nth-child(4) {
-  flex: 0 0 15%;
+  flex: 0 0 130px;
 }
 
 .mat-table {
@@ -69,7 +84,7 @@
 }
 
 .favorite-list {
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .favorite-list:hover {

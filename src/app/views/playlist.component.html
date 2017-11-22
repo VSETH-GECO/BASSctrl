@@ -20,10 +20,10 @@
       <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
         <mat-cell *matCellDef="let track">
-          <button mat-icon-button (click)="voteTrack(track, 1)">
+          <button mat-icon-button (click)="voteTrack(track, 1)" [color]="track.userVote == 1 ? 'primary' : 'basic'">
             <mat-icon>thumb_up</mat-icon>
           </button>
-          <button mat-icon-button (click)="voteTrack(track, -1)">
+          <button mat-icon-button (click)="voteTrack(track, -1)" [color]="track.userVote == -1 ? 'primary' : 'basic'">
             <mat-icon>thumb_down</mat-icon>
           </button>
           <button mat-icon-button (click)="favorite(track)">

@@ -144,7 +144,7 @@ export class PlayerComponent implements OnInit {
   voteTrack(vote): void {
     this.wsService.send(
       new WsPackage(Resource.TRACK, Action.VOTE, {
-        id: 0,
+        id: this.track.id,
         vote: vote
       }));
   }

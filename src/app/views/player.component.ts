@@ -5,6 +5,8 @@ import {WsHandlerService} from '../services/socket/ws-handler.service';
 import {Observable} from 'rxjs/Observable';
 import {Track} from '../util/track';
 import {Action, Resource} from '../services/socket/api';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/takeWhile';
 
 @Component({
   selector: 'app-player',
@@ -102,9 +104,14 @@ export class PlayerComponent implements OnInit {
     this.track = track;
 
     if (track) {
-      const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
-      this.track.thumbnail = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
       this.track.startAt = Date.now() - this.track.position;
+
+      if (track.uri.startsWith('https://www.youtube.com')) {
+        const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
+        this.track.thumbnail = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+      } else {
+        this.track.thumbnail = 'assets/track.svg';
+      }
     }
   }
 
@@ -144,7 +151,7 @@ export class PlayerComponent implements OnInit {
   voteTrack(vote): void {
     this.wsService.send(
       new WsPackage(Resource.TRACK, Action.VOTE, {
-        id: 0,
+        id: this.track.id,
         vote: vote
       }));
   }

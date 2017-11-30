@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {LoginService} from '../login.service';
 import {Subject} from 'rxjs/Subject';
 import {WsPackage} from './ws-package';
 import {Action} from './api';
@@ -15,7 +14,7 @@ export class WsHandlerService {
   public playerSubject = new Subject<any>();
   public favoritesSubject = new Subject<any>();
 
-  constructor(private loginService: LoginService) {}
+  constructor() {}
 
   public app(msg: WsPackage): void {
     switch (msg.action) {
@@ -26,7 +25,6 @@ export class WsHandlerService {
             this.appSubject.next({error: error});
             throw new Error(error);
           } else {
-            this.loginService.loginWToken();
             this.appSubject.next({isReady: true});
           }
         }
@@ -41,8 +39,8 @@ export class WsHandlerService {
     switch (msg.action) {
       case Action.DATA:
         if (msg.data) {
-          this.userSubject.next({action: Action.LOGIN, userid: msg.data.id, username: msg.data.username});
-          this.loginService.setToken(msg.data.token);
+          this.userSubject.next({action: Action.LOGIN, userID: msg.data.id,
+            username: msg.data.username, token: msg.data.token, admin: msg.data.admin});
         }
         break;
 
@@ -55,8 +53,7 @@ export class WsHandlerService {
         break;
 
       case Action.ERROR:
-        // TODO handle error
-        this.appSubject.next({action: Action.ERROR, message: msg.data.message});
+        this.userSubject.next({action: Action.ERROR, message: msg.data.message});
         break;
 
       default:
@@ -125,76 +122,4 @@ export class WsHandlerService {
         console.log('Unknown package:', msg);
     }
   }
-
-  /*
-  public post(msg): void {
-
-    switch (msg.type) {
-      case 'ack':
-        this.playlistSubject.next({response: 'success'});
-        break;
-
-      case 'queue/all':
-        this.playlistSubject.next({playlist: msg.data});
-        break;
-
-      case 'player/current':
-        this.playerSubject.next({track: msg.data});
-        break;
-
-      case 'app/welcome':
-        this.loginService.loginWToken();
-        this.playerSubject.next({isReady: true});
-        this.playlistSubject.next({isReady: true});
-        break;
-
-      case 'user/token':
-        this.loginService.setToken(msg.data.token);
-        this.appSubject.next({username: msg.data.username});
-        this.loginSubject.next({response: 'logged in'});
-        break;
-
-      case 'user/logout':
-        this.loginService.removeToken();
-        this.appSubject.next({username: null});
-        this.loginSubject.next({response: 'logged out'});
-        break;
-
-      case 'player/control':
-        this.playerSubject.next({state: msg.data.state});
-        break;
-
-      case 'user/register':
-        this.registerSubject.next({response: 'success'});
-        break;
-
-      case 'user/favorite':
-        this.playlistSubject.next({favorites: msg.data});
-        this.favoritesSubject.next({favorites: msg.data});
-        break;
-
-      case 'user/unauthorized':
-        switch (msg.data.type) {
-          case 'queue/uri':
-            this.playlistSubject.next({response: 'unauthorized'});
-            break;
-
-          case 'user/register':
-            this.registerSubject.next({response: 'unauthorized'});
-            break;
-        }
-        break;
-
-      case 'err':
-        if (msg.data.message === 'No matches found') {
-          this.playlistSubject.next({response: 'no matches'});
-        } else if (msg.data.message === 'Wrong password.') {
-          this.loginSubject.next({response: 'wrong password'});
-        } else if (msg.data.message === 'Account not found.') {
-          this.loginSubject.next({response: 'account not found'});
-        } else {
-          this.loginSubject.next({response: 'invalid token'});
-        }
-    }
-  } */
 }

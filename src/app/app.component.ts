@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {WebSocketService} from './services/socket/websocket.service';
 import {WsPackage} from './services/socket/ws-package';
 import {WsHandlerService} from './services/socket/ws-handler.service';
-import {LoginService} from './services/login.service';
 import {Action, Resource} from './services/socket/api';
 import {MatSnackBar} from '@angular/material';
+import {SnackbarService} from './services/snackbar.service';
+import {UserService} from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -13,18 +14,23 @@ import {MatSnackBar} from '@angular/material';
   providers: [
     WebSocketService,
     WsHandlerService,
-    LoginService
+    UserService,
+    SnackbarService
   ]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'BASS control';
   username: string;
+  isAdmin: boolean;
 
-  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService, private loginService: LoginService, private snackBar: MatSnackBar) {
+  constructor(private ws: WebSocketService, private wsHandler: WsHandlerService,
+              private userService: UserService, private snackBar: MatSnackBar,
+              private sb: SnackbarService) {
 
-    this.wsService.send(new WsPackage(Resource.APP, Action.INFORM, null));
+    // ws.connect().subscribe();
+    this.ws.send(new WsPackage(Resource.APP, Action.INFORM, null));
 
-    wsService.wsPackages.subscribe(msg => {
+    ws.wsPackages.subscribe(msg => {
       let res: Resource;
       res = msg.resource;
       switch (res) {
@@ -54,31 +60,56 @@ export class AppComponent {
       }
     });
 
-    wsHandler.userSubject.subscribe(data => {
-      if (data.action) {
-        if (data.action === Action.LOGIN) {
-          this.username = data.username;
-        }
-        if (data.action === Action.LOGOUT) {
-          this.username = null;
-        }
+    wsHandler.appSubject.subscribe(data => {
+      if (data.action && data.action === Action.ERROR) {
+        this.openSnackBar(data.message, 2000);
       }
     });
 
-    wsHandler.appSubject.subscribe(data => {
-      if (data.action && data.action === Action.ERROR) {
-        this.openSnackBar(data.message, null, 2000);
-      }
+    sb.getSubject().subscribe(msg => {
+      this.openSnackBar(msg.message, msg.duration, msg.action ? msg.action : null);
     });
+  }
+
+  ngOnInit(): void {
+    this.userService.getUsername()
+      .subscribe(username => this.username = username);
+
+    this.userService.isAdmin()
+      .subscribe(isAdmin => this.isAdmin = isAdmin);
   }
 
   logout(): void {
-    this.loginService.logout();
+    this.userService.logout();
   }
 
-  openSnackBar(message, action, duration: number): void {
-    this.snackBar.open(message, action, {
-      duration: duration
-    });
+  /**
+   * This opens a snackbar on the top level view which will always be visible
+   *
+   * @param {string} message the message to display
+   * @param {number} duration how long the message should be visible
+   * @param {action?: {name: string; callback: (() => void)}} action action name and a function
+   *    that should be called when the user clicks on the action
+   */
+  private openSnackBar(message: string, duration: number, action?: {name: string, callback: () => void}): void {
+    if (action) {
+      // Open snackbar and get action notifier
+      const a = this.snackBar.open(message, action.name, {
+        duration: duration,
+        verticalPosition: 'top'
+      }).onAction();
+
+      // Execute desired action
+      a.subscribe(() => {
+        action.callback();
+      });
+
+    } else {
+      // Open snackbar without action
+      this.snackBar.open(message, null, {
+        duration: duration,
+        verticalPosition: 'top'
+      });
+    }
   }
 }

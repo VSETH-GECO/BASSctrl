@@ -4,27 +4,32 @@
 
     <div class="spacer"></div>
 
-    <div *ngIf="username">
+    <div *ngIf="username" style="z-index: 1000000000">
       <button mat-button [matMenuTriggerFor]="menu">
         <span>{{username}} </span>
         <mat-icon>verified_user</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item [routerLink]="['/register']">Add user</button>
         <button mat-menu-item (click)="logout()">Logout</button>
         <button mat-menu-item [routerLink]="['/register']">Add user</button>
       </mat-menu>
     </div>
+    <div *ngIf="isAdmin">
+      <a mat-icon-button [routerLink]="['/update']" style="z-index: 1000000000">
+        <mat-icon>update</mat-icon>
+      </a>
+    </div>
     <div *ngIf="!username">
-      <a mat-icon-button [routerLink]="['/login']">
+      <a mat-icon-button [routerLink]="['/login']" style="z-index: 1000000000">
         <mat-icon>input</mat-icon>
       </a>
     </div>
   </mat-toolbar>
   <app-player></app-player>
 </div>
-<div class="subheader"></div>
 <!-- TODO put me in a separate component, thx-->
+
+<div class="subheader"></div>
 
 <div class="real-body">
   <router-outlet></router-outlet>

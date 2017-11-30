@@ -8,7 +8,7 @@ import {LoginComponent} from './views/login.component';
 import {PlayerComponent} from './views/player.component';
 import {MainViewComponent} from './views/main-view.component';
 import {RegisterComponent} from './views/register.component';
-import {PlaylistComponent} from './views/playlist.component';
+import {QueueComponent} from './views/queue.component';
 import {FavoritesComponent} from './views/favorites.component';
 
 import {
@@ -31,6 +31,14 @@ import {
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CookieService} from 'angular2-cookie/core';
+import {SnackbarService} from './services/snackbar.service';
+import {UserService} from './services/user.service';
+import {WsHandlerService} from './services/socket/ws-handler.service';
+import {WebSocketService} from './services/socket/websocket.service';
+import {UpdateComponent} from './views/update.component';
+import {TrackService} from './services/track.service';
+import {FavoriteService} from './services/favorite.service';
+import {QueueService} from './services/queue.service';
 
 RouterModule.forRoot([
   {
@@ -45,8 +53,9 @@ RouterModule.forRoot([
     MainViewComponent,
     RegisterComponent,
     PlayerComponent,
-    PlaylistComponent,
+    QueueComponent,
     LoginComponent,
+    UpdateComponent,
     FavoritesComponent
   ],
   imports: [
@@ -82,6 +91,10 @@ RouterModule.forRoot([
         component: FavoritesComponent
       },
       {
+        path: 'update',
+        component: UpdateComponent
+      },
+      {
         path: 'main',
         component: MainViewComponent
       },
@@ -92,7 +105,16 @@ RouterModule.forRoot([
       }
     ])
   ],
-  providers: [CookieService],
+  providers: [
+    CookieService,
+    WebSocketService,
+    WsHandlerService,
+    UserService,
+    SnackbarService,
+    QueueService,
+    TrackService,
+    FavoriteService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

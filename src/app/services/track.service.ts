@@ -4,7 +4,7 @@ import {WsPackage} from './socket/ws-package';
 import {Action, Resource} from './socket/api';
 
 @Injectable()
-export class PlayerService {
+export class TrackService {
   constructor (private ws: WebSocketService) {
 
   }
@@ -14,6 +14,6 @@ export class PlayerService {
       new WsPackage(Resource.TRACK, Action.VOTE, {
         id: track.id,
         vote: vote
-      }));
+    }));
   }
 }

@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
-import * as Rx from 'rxjs/Rx';
 import {WsPackage} from './ws-package';
 import {Subject} from 'rxjs/Subject';
 import {Action, Resource} from './api';
+import {Observer} from 'rxjs/Observer';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 
 export interface WSPackage {
   resource: Resource;
@@ -14,11 +16,15 @@ export interface WSPackage {
 export class WebSocketService {
   constructor() {}
 
-  private socket: Rx.Subject<MessageEvent>;
+  private socket: Subject<MessageEvent>;
   private SERVER_URL = 'ws://' + window.location.hostname + ':8455';
   public wsPackages: Subject<WSPackage>;
 
-  public connect(url): Rx.Subject<MessageEvent> {
+  public connect(url?: string): Subject<MessageEvent> {
+    if (!url) {
+      url = this.SERVER_URL;
+    }
+
     if (!this.socket) {
       this.socket = this.create(url);
       // console.log('Connected to:', url);
@@ -27,11 +33,11 @@ export class WebSocketService {
     return this.socket;
   }
 
-  private create(url): Rx.Subject<MessageEvent> {
+  private create(url): Subject<MessageEvent> {
     const socket = new WebSocket(url);
 
-    const observable = Rx.Observable.create(
-      (obs: Rx.Observer<MessageEvent>) => {
+    const observable = Observable.create(
+      (obs: Observer<MessageEvent>) => {
         socket.onmessage = obs.next.bind(obs);
         socket.onerror = obs.error.bind(obs);
         socket.onclose = obs.complete.bind(obs);
@@ -47,7 +53,7 @@ export class WebSocketService {
       }
     };
 
-    return Rx.Subject.create(observer, observable);
+    return Subject.create(observer, observable);
   }
 
   public send(wsPackage: WsPackage): void {

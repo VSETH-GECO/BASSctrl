@@ -29,7 +29,7 @@
 </div>
 <!-- TODO put me in a separate component, thx-->
 
-<div class="subheader"></div>
+<div id="subheader" [style.height]="currentTrack ? '246px' : '64px'"></div>
 
 <div class="real-body">
   <router-outlet></router-outlet>

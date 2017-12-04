@@ -53,7 +53,7 @@ export class UserService {
    * Will try to login the user if there is a cookie
    * named 'token'.
    */
-  private loginWToken(): void {
+  public loginWToken(): void {
     let token;
     if (token = new CookieService().get('token')) {
       this.ws.send(

@@ -8,6 +8,7 @@ import {Action, Resource} from './socket/api';
 import {Observable} from 'rxjs/Observable';
 import {WsPackage} from './socket/ws-package';
 import {UserService} from './user.service';
+import {FavoriteService} from './favorite.service';
 
 @Injectable()
 export class QueueService {
@@ -15,10 +16,14 @@ export class QueueService {
   queue = new BehaviorSubject<Track[]>(null);
   submitPending = new BehaviorSubject<boolean>(false);
 
-  constructor(private wsHandler: WsHandlerService, private ws: WebSocketService, private sb: SnackbarService, private user: UserService) {
+  constructor(private wsHandler: WsHandlerService, private ws: WebSocketService,
+              private sb: SnackbarService, private user: UserService,
+              private favorites: FavoriteService) {
+
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
         this.isReady = true;
+        ws.send(new WsPackage(Resource.QUEUE, Action.GET, null));
       }
     });
 
@@ -41,24 +46,30 @@ export class QueueService {
         }
       }
     });
+
+
+    this.wsHandler.favoritesSubject.subscribe(() => {
+      this.updateWithFavorites();
+    });
   }
 
   private updateWithFavorites(): void {
-    let tracks = this.queue.getValue();
-    const favorites = null;
+    const allTracks = this.queue.getValue();
+    const favorites = this.favorites.getFavorites().getValue();
 
-    if (!favorites || !tracks) {
+    if (!favorites || !allTracks) {
       return;
     }
 
     for (const fav of favorites) {
-      tracks = this.queue.getValue().filter(tr => tr.uri === fav.uri);
+      const tracks = this.queue.getValue().filter(tr => tr.uri === fav.uri);
       for (const track of tracks) {
         track.isFavorite = true;
       }
     }
 
-    this.queue.next(tracks);
+    // Push updated queue
+    this.queue.next(allTracks);
   }
 
   private updateWithVotes(): void {
@@ -80,6 +91,10 @@ export class QueueService {
   }
 
   public getQueue(): Observable<Track[]> {
+    if (!this.queue.getValue()) {
+      this.ws.send(new WsPackage(Resource.QUEUE, Action.GET, null));
+    }
+
     return this.queue.asObservable();
   }
 

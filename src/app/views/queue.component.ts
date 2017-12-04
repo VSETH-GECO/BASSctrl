@@ -23,12 +23,12 @@ export class QueueComponent implements OnInit {
 
   constructor(private queueService: QueueService, private trackService: TrackService, private sb: SnackbarService, private router: Router,
               private favoriteService: FavoriteService) {
+    this.dataSource = new PlaylistDataSource(this.queueService);
   }
 
   ngOnInit(): void {
-    this.dataSource = new PlaylistDataSource(this.queueService);
-
     this.queueService.getSubmitPending().subscribe(status => this.submitPending = status);
+    this.queueService.getQueue().subscribe(queue => this.queue = queue);
   }
 
   voteTrack(track, vote): void {
@@ -39,13 +39,12 @@ export class QueueComponent implements OnInit {
     this.favoriteService.favorite(track);
   }
 
-  submitRequest(uri?: string): void {
-    console.log(uri);
+  submitRequest(): void {
     if (!this.requestUri) {
       // this.sb.openSnackbar('You have to login', 5000, {name: 'Login', callback: () => {this.router.navigateByUrl('/login'); }});
       this.sb.openSnackbar('Please enter a uri');
     } else {
-      this.queue.submitRequest(this.requestUri);
+      this.queueService.submitRequest(this.requestUri);
     }
   }
 

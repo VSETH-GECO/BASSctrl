@@ -6,19 +6,11 @@ import {Observer} from 'rxjs/Observer';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
-export interface WSPackage {
-  resource: Resource;
-  action: Action;
-  data: object;
-}
-
 @Injectable()
 export class WebSocketService {
-  constructor() {}
-
   private socket: Subject<MessageEvent>;
   private SERVER_URL = 'ws://' + window.location.hostname + ':8455';
-  public wsPackages: Subject<WSPackage>;
+  public wsPackages: Subject<WsPackage>;
 
   public connect(url?: string): Subject<MessageEvent> {
     if (!url) {
@@ -27,7 +19,7 @@ export class WebSocketService {
 
     if (!this.socket) {
       this.socket = this.create(url);
-      // console.log('Connected to:', url);
+      // DEBUG console.log('Connected to:', url);
     }
 
     return this.socket;
@@ -58,8 +50,8 @@ export class WebSocketService {
 
   public send(wsPackage: WsPackage): void {
     if (!this.wsPackages) {
-      this.wsPackages = <Subject<WSPackage>>this.connect(this.SERVER_URL)
-        .map((response: MessageEvent): WSPackage => {
+      this.wsPackages = <Subject<WsPackage>>this.connect(this.SERVER_URL)
+        .map((response: MessageEvent): WsPackage => {
           const pack = JSON.parse(response.data);
           return {
             resource: Resource[<string>pack.resource.toUpperCase()],
@@ -69,7 +61,22 @@ export class WebSocketService {
         });
     }
 
-    // DEBUG console.log('msg to send:', wsPackage);
     this.wsPackages.next(wsPackage);
+  }
+
+  public getObservable(): Observable<WsPackage> {
+    if (!this.wsPackages) {
+      this.wsPackages = <Subject<WsPackage>>this.connect(this.SERVER_URL)
+        .map((response: MessageEvent): WsPackage => {
+          const pack = JSON.parse(response.data);
+          return {
+            resource: Resource[<string>pack.resource.toUpperCase()],
+            action: Action[<string>pack.action.toUpperCase()],
+            data: pack.data
+          };
+        });
+    }
+
+    return this.wsPackages.asObservable();
   }
 }

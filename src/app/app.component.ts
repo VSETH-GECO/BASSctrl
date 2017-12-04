@@ -1,36 +1,29 @@
 import {Component, OnInit} from '@angular/core';
 import {WebSocketService} from './services/socket/websocket.service';
-import {WsPackage} from './services/socket/ws-package';
 import {WsHandlerService} from './services/socket/ws-handler.service';
 import {Action, Resource} from './services/socket/api';
 import {MatSnackBar} from '@angular/material';
 import {SnackbarService} from './services/snackbar.service';
 import {UserService} from './services/user.service';
+import {PlayerService} from './services/player.service';
+import {Track} from './util/track';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  providers: [
-    WebSocketService,
-    WsHandlerService,
-    UserService,
-    SnackbarService
-  ]
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   title = 'BASS control';
   username: string;
   isAdmin: boolean;
+  currentTrack: Track;
 
   constructor(private ws: WebSocketService, private wsHandler: WsHandlerService,
               private userService: UserService, private snackBar: MatSnackBar,
-              private sb: SnackbarService) {
+              private sb: SnackbarService, private player: PlayerService) {
 
-    // ws.connect().subscribe();
-    this.ws.send(new WsPackage(Resource.APP, Action.INFORM, null));
-
-    ws.wsPackages.subscribe(msg => {
+    ws.getObservable().subscribe(msg => {
       let res: Resource;
       res = msg.resource;
       switch (res) {
@@ -77,6 +70,9 @@ export class AppComponent implements OnInit {
 
     this.userService.isAdmin()
       .subscribe(isAdmin => this.isAdmin = isAdmin);
+
+    this.player.getTrack()
+      .subscribe(track => this.currentTrack = track);
   }
 
   logout(): void {

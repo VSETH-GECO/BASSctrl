@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {WsPackage} from '../services/socket/ws-package';
 import {WebSocketService} from '../services/socket/websocket.service';
-import {WsHandlerService} from '../services/socket/ws-handler.service';
+import {PlayerService} from '../services/player.service';
 import {Observable} from 'rxjs/Observable';
 import {Track} from '../util/track';
 import {Action, Resource} from '../services/socket/api';
@@ -20,42 +20,13 @@ export class PlayerComponent implements OnInit {
   methodIcon: string;
   favorites;
 
-  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService) {
-    wsHandler.appSubject.subscribe(data => {
-      if (data.isReady) {
-        this.wsService.send(new WsPackage(Resource.PLAYER, Action.GET, null));
-      }
-    });
-
-    wsHandler.playerSubject.subscribe(data => {
-      if (data.type && data.type === 'data') {
-        this.setTrack(data.track);
-        this.setState(data.state);
-        this.updateFavorite();
-        this.updateVotes();
-      }
-    });
-
-    wsHandler.userSubject.subscribe(data => {
-      if (data.action && data.action === Action.LOGIN) {
-        this.userID = data.userid;
-      }
-    });
-
-    wsHandler.favoritesSubject.subscribe(data => {
-      if (data.action) {
-        switch (data.action) {
-          case Action.DATA:
-            this.favorites = data.favorites;
-            this.updateFavorite();
-            break;
-        }
-      }
-    });
+  constructor(private wsService: WebSocketService,
+              private playerService: PlayerService) {
   }
 
   ngOnInit(): void {
-    this.wsService.send(new WsPackage(Resource.PLAYER, Action.GET, null));
+    this.playerService.getTrack().subscribe(track => this.setTrack(track));
+    this.playerService.getState().subscribe(state => this.setState(state));
   }
 
   private updateFavorite(): void {
@@ -100,7 +71,7 @@ export class PlayerComponent implements OnInit {
     this.state = state;
   }
 
-  private setTrack(track): void {
+  private setTrack(track: Track): void {
     this.track = track;
 
     if (track) {

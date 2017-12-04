@@ -96,7 +96,7 @@ export class WsHandlerService {
   public player(msg: WsPackage): void {
     switch (msg.action) {
       case Action.DATA:
-        this.playerSubject.next({type: 'data', state: msg.data.state, track: msg.data.track});
+        this.playerSubject.next({action: Action.DATA, state: msg.data.state, track: msg.data.track});
         break;
 
       default:

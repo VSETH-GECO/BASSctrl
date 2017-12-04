@@ -26,5 +26,6 @@ export enum Action {
   SETADMIN = 'setadmin',
   SUCCESS = 'success',
   ERROR = 'error',
-  DATA = 'data'
+  DATA = 'data',
+  UPDATE = 'update'
 }

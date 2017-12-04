@@ -1,0 +1,14 @@
+<div *ngIf="!updateStatus">
+<mat-radio-group [(ngModel)]="branch">
+  <mat-radio-button value="dev">dev at {{devInfo}}</mat-radio-button><br><br>
+  <mat-radio-button value="master">master at {{masterInfo}}</mat-radio-button>
+</mat-radio-group>
+
+
+<br><br>
+<button mat-raised-button color="warn" (click)="update()" [disabled]="!branch">Update</button>
+</div>
+
+<div *ngIf="updateStatus">
+  Status: {{updateStatus}}
+</div>

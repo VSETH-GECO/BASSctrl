@@ -94,3 +94,9 @@
 .cdk-overlay-pane {
   z-index: 10000000;
 }
+
+.branches-radio-group {
+  margin-top: 10px;
+  display: inline-flex;
+  flex-direction: column;
+}

@@ -29,15 +29,21 @@ interface JenkinsResponse {
   _class: string;
 }
 
+class Branch {
+  name: string;
+  info: string;
+}
+
 @Component({
   selector: 'app-update',
   templateUrl: './update.component.html',
+  styleUrls: ['../app.component.css']
 })
 export class UpdateComponent implements OnInit {
   branch: string;
-  devInfo = 'currently no information';
-  masterInfo = 'currently no information';
+  branches: Branch[];
   updateStatus: string;
+  baseURL = 'https://jenkins.stammgruppe.eu/';
 
   constructor (private sb: SnackbarService,
                private http: HttpClient,
@@ -53,16 +59,22 @@ export class UpdateComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.http.get<JenkinsResponse>('https://jenkins.stammgruppe.eu/job/BASS/job/dev/lastSuccessfulBuild/api/json')
+    this.branches = [];
+    this.http.get<any>(this.baseURL + 'job/BASS/api/json')
       .subscribe(data => {
-        const date = new Date(data.timestamp);
-        this.devInfo = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-    });
-    this.http.get<JenkinsResponse>('https://jenkins.stammgruppe.eu/job/BASS/job/master/lastSuccessfulBuild/api/json')
-      .subscribe(data => {
-        const date = new Date(data.timestamp);
-        this.masterInfo = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-    });
+        for (const job of data.jobs) {
+
+          const branch = new Branch();
+          branch.name = job.name;
+          this.http.get<JenkinsResponse>('https://jenkins.stammgruppe.eu/job/BASS/job/' + job.name + '/lastSuccessfulBuild/api/json')
+            .subscribe(data1 => {
+              const date = new Date(data1.timestamp);
+              branch.info = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            });
+
+          this.branches.push(branch);
+        }
+      });
   }
 
   update(): void {

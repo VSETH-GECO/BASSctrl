@@ -1,6 +1,6 @@
 .footer {
-  position: fixed; /* Set the navbar to fixed position */
-  bottom: 0; /* Position the navbar at the bottom of the page */
+  position: fixed; /* Set the footer to fixed position */
+  bottom: 0;       /* Position the footer at the bottom of the page */
   width: calc(100% - 16px); /* Sorry world */
   z-index: 100000;
   background: white;

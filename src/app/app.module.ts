@@ -6,10 +6,10 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login.component';
 import {PlayerComponent} from './views/player.component';
-import {MainViewComponent} from './views/main-view.component';
 import {RegisterComponent} from './views/register.component';
 import {QueueComponent} from './views/queue.component';
 import {FavoritesComponent} from './views/favorites.component';
+import {UpdateComponent} from './views/update.component';
 
 import {
   MatButtonModule,
@@ -23,6 +23,7 @@ import {
   MatMenuModule,
   MatProgressBarModule,
   MatProgressSpinnerModule,
+  MatRadioModule,
   MatSnackBarModule,
   MatTableModule,
   MatToolbarModule,
@@ -35,10 +36,11 @@ import {SnackbarService} from './services/snackbar.service';
 import {UserService} from './services/user.service';
 import {WsHandlerService} from './services/socket/ws-handler.service';
 import {WebSocketService} from './services/socket/websocket.service';
-import {UpdateComponent} from './views/update.component';
 import {TrackService} from './services/track.service';
 import {FavoriteService} from './services/favorite.service';
 import {QueueService} from './services/queue.service';
+import {HttpClientModule} from '@angular/common/http';
+import {PlayerService} from './services/player.service';
 
 RouterModule.forRoot([
   {
@@ -50,12 +52,11 @@ RouterModule.forRoot([
 @NgModule({
   declarations: [
     AppComponent,
-    MainViewComponent,
     RegisterComponent,
     PlayerComponent,
     QueueComponent,
-    LoginComponent,
     UpdateComponent,
+    LoginComponent,
     FavoritesComponent
   ],
   imports: [
@@ -77,6 +78,8 @@ RouterModule.forRoot([
     MatGridListModule,
     MatExpansionModule,
     MatTooltipModule,
+    MatRadioModule,
+    HttpClientModule,
     RouterModule.forRoot([
       {
         path: 'login',
@@ -96,7 +99,7 @@ RouterModule.forRoot([
       },
       {
         path: 'main',
-        component: MainViewComponent
+        component: QueueComponent
       },
       {
         path: '',
@@ -113,7 +116,8 @@ RouterModule.forRoot([
     SnackbarService,
     QueueService,
     TrackService,
-    FavoriteService
+    FavoriteService,
+    PlayerService
   ],
   bootstrap: [AppComponent]
 })

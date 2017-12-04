@@ -5,11 +5,22 @@ import {Action, Resource} from './socket/api';
 import {WsHandlerService} from './socket/ws-handler.service';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
+interface Favorite {
+  title: string;
+  uri: string;
+}
+
 @Injectable()
 export class FavoriteService {
-  favorites = new BehaviorSubject(null);
+  private favorites = new BehaviorSubject<Favorite[]>(null);
 
   constructor (private ws: WebSocketService, private wsHandler: WsHandlerService) {
+    wsHandler.appSubject.subscribe(data => {
+      if (data.isReady) {
+        ws.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
+      }
+    });
+
     wsHandler.favoritesSubject.subscribe(data => {
       if (data.action) {
         switch (data.action) {
@@ -34,5 +45,12 @@ export class FavoriteService {
           uri: track.uri
         }));
     }
+  }
+
+  public getFavorites(): BehaviorSubject<Favorite[]> {
+    if (!this.favorites.getValue()) {
+      this.ws.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
+    }
+    return this.favorites;
   }
 }

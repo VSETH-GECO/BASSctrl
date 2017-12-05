@@ -11,7 +11,7 @@
       </button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="logout()">Logout</button>
-        <button mat-menu-item [routerLink]="['/register']">Add user</button>
+        <button *ngIf="isAdmin" mat-menu-item [routerLink]="['/register']">Add user</button>
       </mat-menu>
     </div>
     <div *ngIf="isAdmin">

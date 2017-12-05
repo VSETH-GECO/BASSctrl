@@ -2,11 +2,11 @@ import {WebSocketService} from './socket/websocket.service';
 import {Injectable} from '@angular/core';
 import {WsHandlerService} from './socket/ws-handler.service';
 import {Action, Resource} from './socket/api';
-import {CookieService} from 'angular2-cookie/core';
 import {SnackbarService} from './snackbar.service';
 import {WsPackage} from './socket/ws-package';
 import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {LocalStorageService} from 'ngx-webstorage';
 
 @Injectable()
 export class UserService {
@@ -15,7 +15,8 @@ export class UserService {
   private userID = new BehaviorSubject<number>(null);
   private admin = new BehaviorSubject<boolean>(null);
 
-  constructor(private wsHandler: WsHandlerService, private ws: WebSocketService, private sb: SnackbarService) {
+  constructor(private wsHandler: WsHandlerService, private ws: WebSocketService,
+              private sb: SnackbarService, private storage: LocalStorageService) {
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
         this.loginWToken();
@@ -43,6 +44,7 @@ export class UserService {
             this.userID.next(null);
             this.admin.next(false);
             this.removeToken();
+            sb.openSnackbar('Logged out');
             break;
         }
       }
@@ -50,45 +52,57 @@ export class UserService {
   }
 
   /**
-   * Will try to login the user if there is a cookie
-   * named 'token'.
+   * Will try to login the user if there is a token
+   * stored locally
    */
   public loginWToken(): void {
-    let token;
-    if (token = new CookieService().get('token')) {
+    if (this.checkToken()) {
       this.ws.send(
         new WsPackage(Resource.USER, Action.LOGIN, {
-          token: token
+          token: JSON.parse(this.storage.retrieve('token')).token
         })
       );
     }
   }
 
   /**
-   * Sets the cookie 'token' to the provided token.
+   * Sets the locale storage 'token' to the provided token.
    * @param token The string that will be set as token
    */
   private setToken(token): void {
-    new CookieService().put('token', token);
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    this.storage.store('token', JSON.stringify({token: token, expires: date}));
   }
 
   /**
-   * Removes the cookie 'token'.
+   * Removes the locally stored 'token'.
    */
   private removeToken(): void {
-    new CookieService().remove('token');
+    console.log('hi');
+    this.storage.clear('token');
+  }
+
+  private checkToken(): boolean {
+    let token = this.storage.retrieve('token');
+
+    if (token) {
+      token = JSON.parse(token);
+      return new Date(token.expires) > new Date();
+    }
+
+    return false;
   }
 
   /**
    * Will log out the user by sending the appropriate
-   * request. Will NOT unset username or token cookie!
+   * request. Will NOT unset username or stored token!
    */
   public logout(): void {
-    let token;
-    if (token = new CookieService().get('token')) {
+    if (this.checkToken()) {
       this.ws.send(
         new WsPackage(Resource.USER, Action.LOGOUT, {
-          token: token
+          token: JSON.parse(this.storage.retrieve('token')).token
         })
       );
     }

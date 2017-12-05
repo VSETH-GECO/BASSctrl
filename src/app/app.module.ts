@@ -31,7 +31,6 @@ import {
 } from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {CookieService} from 'angular2-cookie/core';
 import {SnackbarService} from './services/snackbar.service';
 import {UserService} from './services/user.service';
 import {WsHandlerService} from './services/socket/ws-handler.service';
@@ -41,6 +40,7 @@ import {FavoriteService} from './services/favorite.service';
 import {QueueService} from './services/queue.service';
 import {HttpClientModule} from '@angular/common/http';
 import {PlayerService} from './services/player.service';
+import {Ng2Webstorage} from 'ngx-webstorage';
 
 RouterModule.forRoot([
   {
@@ -80,6 +80,7 @@ RouterModule.forRoot([
     MatTooltipModule,
     MatRadioModule,
     HttpClientModule,
+    Ng2Webstorage,
     RouterModule.forRoot([
       {
         path: 'login',
@@ -109,7 +110,6 @@ RouterModule.forRoot([
     ])
   ],
   providers: [
-    CookieService,
     WebSocketService,
     WsHandlerService,
     UserService,

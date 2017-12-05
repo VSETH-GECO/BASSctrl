@@ -4,6 +4,11 @@
 
     <div class="spacer"></div>
 
+    <div *ngIf="isAdmin">
+      <a mat-icon-button [routerLink]="['/update']" style="z-index: 1000000000">
+        <mat-icon>update</mat-icon>
+      </a>
+    </div>
     <div *ngIf="username" style="z-index: 1000000000">
       <button mat-button [matMenuTriggerFor]="menu">
         <span>{{username}} </span>
@@ -13,11 +18,6 @@
         <button mat-menu-item (click)="logout()">Logout</button>
         <button *ngIf="isAdmin" mat-menu-item [routerLink]="['/register']">Add user</button>
       </mat-menu>
-    </div>
-    <div *ngIf="isAdmin">
-      <a mat-icon-button [routerLink]="['/update']" style="z-index: 1000000000">
-        <mat-icon>update</mat-icon>
-      </a>
     </div>
     <div *ngIf="!username">
       <a mat-icon-button [routerLink]="['/login']" style="z-index: 1000000000">

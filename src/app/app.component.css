@@ -35,16 +35,12 @@
   z-index: 100;
 }
 
-.subheader {
-  height: 246px;
-}
-
 .header .title {
   cursor: pointer;
 }
 
 .real-body {
-  margin: 0px 8px 60px;
+  margin: 0 8px 60px;
 }
 
 .player-thumbnail {
@@ -81,10 +77,6 @@
 
 .mat-table {
   overflow: auto;
-}
-
-.favorite-list {
-  /* cursor: pointer; */
 }
 
 .favorite-list:hover {

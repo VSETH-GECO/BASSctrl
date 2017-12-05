@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {WsHandlerService} from './socket/ws-handler.service';
 import {WebSocketService} from './socket/websocket.service';
-import {SnackbarService} from './snackbar.service';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Track} from '../util/track';
 import {Action, Resource} from './socket/api';
@@ -17,8 +16,7 @@ export class QueueService {
   submitPending = new BehaviorSubject<boolean>(false);
 
   constructor(private wsHandler: WsHandlerService, private ws: WebSocketService,
-              private sb: SnackbarService, private user: UserService,
-              private favorites: FavoriteService) {
+              private user: UserService, private favorites: FavoriteService) {
 
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
@@ -99,6 +97,7 @@ export class QueueService {
   }
 
   public submitRequest(uri: string): void {
+    this.submitPending.next(true);
     this.ws.send(
       new WsPackage(Resource.QUEUE, Action.URI, {
         uri: uri

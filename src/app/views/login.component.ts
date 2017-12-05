@@ -9,6 +9,7 @@ import {Action, Resource} from '../services/socket/api';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
+  styles: ['.mat-form-field {width: 300px; max-width: 400px}']
 })
 export class LoginComponent {
   @Input() username: string;

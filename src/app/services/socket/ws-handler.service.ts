@@ -5,7 +5,7 @@ import {Action} from './api';
 
 @Injectable()
 export class WsHandlerService {
-  static API_VERSION = 'v1';
+  static API_VERSION = 'v2';
 
   public appSubject = new Subject<any>();
   public userSubject = new Subject<any>();
@@ -54,6 +54,10 @@ export class WsHandlerService {
 
       case Action.ERROR:
         this.userSubject.next({action: Action.ERROR, message: msg.data.message});
+        break;
+
+      case Action.INFORM:
+        this.userSubject.next({action: Action.DATA, data: msg.data});
         break;
 
       default:

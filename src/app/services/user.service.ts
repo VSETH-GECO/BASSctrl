@@ -7,10 +7,12 @@ import {WsPackage} from './socket/ws-package';
 import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'ngx-webstorage';
+import {User} from '../views/register.component';
 
 @Injectable()
 export class UserService {
   private isReady = false;
+  private userList = new BehaviorSubject<User[]>(null);
   private username = new BehaviorSubject<string>(null);
   private userID = new BehaviorSubject<number>(null);
   private admin = new BehaviorSubject<boolean>(null);
@@ -20,6 +22,7 @@ export class UserService {
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
         this.loginWToken();
+        this.ws.send(new WsPackage(Resource.USER, Action.GET, null));
         this.isReady = true;
       }
     });
@@ -45,6 +48,10 @@ export class UserService {
             this.admin.next(false);
             this.removeToken();
             sb.openSnackbar('Logged out');
+            break;
+
+          case Action.DATA:
+            this.userList.next(data.data);
             break;
         }
       }
@@ -126,5 +133,9 @@ export class UserService {
 
   public isAdmin(): Observable<boolean> {
     return this.admin.asObservable();
+  }
+
+  public getUserList(): Observable<User[]> {
+    return this.userList.asObservable();
   }
 }

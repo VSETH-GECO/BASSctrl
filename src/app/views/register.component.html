@@ -1,10 +1,70 @@
-<form>
-  <mat-form-field>
-    <input matInput placeholder="Username" [(ngModel)]="newUserName" name="newUserName">
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput placeholder="Password" [(ngModel)]="newUserPassword" name="newUserPassword" type="password">
-  </mat-form-field>
+<mat-card>
+  <mat-card-header>User-Management</mat-card-header>
 
-  <button mat-raised-button (click)="registerNewUser()">Register</button>
-</form>
+  <mat-card-content>
+    <mat-table #table [dataSource]="dataSource">
+
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Username </mat-header-cell>
+      <mat-cell *matCellDef="let user">
+        <div *ngIf="user.isEdited">
+          <form (ngSubmit)="editUsername(user)">
+            <mat-form-field>
+              <input matInput [(ngModel)]="user.name" name="editedUserName">
+              <button mat-icon-button matSuffix type="submit">
+                <mat-icon>save</mat-icon>
+              </button>
+            </mat-form-field>
+          </form>
+        </div>
+        <div *ngIf="!user.isEdited">{{user.name}}</div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="admin">
+      <mat-header-cell *matHeaderCellDef> Admin </mat-header-cell>
+      <mat-cell *matCellDef="let user"><mat-icon>{{user.isAdmin ? 'check' : 'clear'}}</mat-icon></mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+      <mat-cell *matCellDef="let user">
+        <span matTooltip="Delete {{user.name}}">
+          <button mat-icon-button (click)="deleteUser(user)">
+            <mat-icon color="warn">delete</mat-icon>
+          </button>
+        </span>
+
+        <span [matTooltip]="user.isAdmin ? 'Demote as admin' : 'Promote to admin'">
+          <button mat-icon-button (click)="setAdmin(user)">
+            <mat-icon [color]="user.isAdmin ? '' : 'primary'">security</mat-icon>
+          </button>
+        </span>
+
+        <span matTooltip="Edit username">
+          <button mat-icon-button (click)="user.isEdited = !user.isEdited">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </span>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  </mat-card-content>
+
+  <mat-card-actions style="padding-left: 16px">
+    Add new user:
+    <form>
+      <mat-form-field>
+        <input matInput placeholder="Username" [(ngModel)]="newUserName" name="newUserName">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Password" [(ngModel)]="newUserPassword" name="newUserPassword" type="password">
+      </mat-form-field>
+
+      <button mat-raised-button (click)="registerNewUser()">Register</button>
+    </form>
+  </mat-card-actions>
+</mat-card>

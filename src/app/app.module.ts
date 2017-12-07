@@ -41,6 +41,7 @@ import {QueueService} from './services/queue.service';
 import {HttpClientModule} from '@angular/common/http';
 import {PlayerService} from './services/player.service';
 import {Ng2Webstorage} from 'ngx-webstorage';
+import {AboutComponent} from './views/about/about.component';
 
 RouterModule.forRoot([
   {
@@ -57,7 +58,8 @@ RouterModule.forRoot([
     QueueComponent,
     UpdateComponent,
     LoginComponent,
-    FavoritesComponent
+    FavoritesComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -97,6 +99,10 @@ RouterModule.forRoot([
       {
         path: 'update',
         component: UpdateComponent
+      },
+      {
+        path: 'about',
+        component: AboutComponent
       },
       {
         path: 'main',

@@ -40,7 +40,7 @@ export class FavoritesComponent implements OnInit {
 
   submitRequest(uri: string): void {
     this.ws.send(
-      new WsPackage(Resource.QUEUE, Action.URI, {
+      new WsPackage(Resource.QUEUE, Action.ADD, {
         uri: uri
       })
     );

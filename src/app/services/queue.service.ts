@@ -99,7 +99,7 @@ export class QueueService {
   public submitRequest(uri: string): void {
     this.submitPending.next(true);
     this.ws.send(
-      new WsPackage(Resource.QUEUE, Action.URI, {
+      new WsPackage(Resource.QUEUE, Action.ADD, {
         uri: uri
       })
     );

@@ -48,8 +48,8 @@ export class WsHandlerService {
         this.userSubject.next({action: Action.LOGOUT});
         break;
 
-      case Action.REGISTER:
-        this.userSubject.next({action: Action.REGISTER});
+      case Action.ADD:
+        this.userSubject.next({action: Action.ADD});
         break;
 
       case Action.ERROR:

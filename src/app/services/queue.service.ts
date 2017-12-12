@@ -29,6 +29,7 @@ export class QueueService {
       if (data.action) {
         switch (data.action) {
           case Action.DATA:
+            // This will cause the site to request the queue on every load if it was empty the last time but that is acceptable
             this.queue.next(data.queue.length === 0 ? null : data.queue);
             this.updateWithFavorites();
             this.updateWithVotes();
@@ -90,6 +91,7 @@ export class QueueService {
 
   public getQueue(): Observable<Track[]> {
     if (!this.queue.getValue()) {
+      console.log('hi');
       this.ws.send(new WsPackage(Resource.QUEUE, Action.GET, null));
     }
 

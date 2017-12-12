@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {WebSocketService} from '../services/socket/websocket.service';
 import {WsHandlerService} from '../services/socket/ws-handler.service';
-import {Router} from '@angular/router';
 import {WsPackage} from '../services/socket/ws-package';
 import {MatSnackBar} from '@angular/material';
 import {Action, Resource} from '../services/socket/api';
 import {Track} from '../util/track';
+import {FavoriteService} from '../services/favorite.service';
 
 @Component({
   selector: 'app-favorites',
@@ -16,7 +16,8 @@ export class FavoritesComponent implements OnInit {
   favorites;
   lastRemoved: Track;
 
-  constructor(private ws: WebSocketService, private wsHandler: WsHandlerService, private router: Router, private snackBar: MatSnackBar) {
+  constructor(private ws: WebSocketService, private wsHandler: WsHandlerService,
+              private snackBar: MatSnackBar, private favService: FavoriteService) {
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
         ws.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
@@ -35,7 +36,7 @@ export class FavoritesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.ws.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
+    this.favService.getFavorites().subscribe(favorites => this.favorites = favorites);
   }
 
   submitRequest(uri: string): void {

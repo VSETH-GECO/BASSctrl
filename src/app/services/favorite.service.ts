@@ -51,6 +51,7 @@ export class FavoriteService {
     if (!this.favorites.getValue()) {
       this.ws.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
     }
+
     return this.favorites;
   }
 }

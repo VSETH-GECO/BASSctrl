@@ -61,6 +61,13 @@ export class WebSocketService {
         });
     }
 
+    /* Very bad debugging stuff, don't use unless necessary!
+    try {
+      throw new Error();
+    } catch (e) {
+      console.log(e);
+    } */
+
     this.wsPackages.next(wsPackage);
   }
 

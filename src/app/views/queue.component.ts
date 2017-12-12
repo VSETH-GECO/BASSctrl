@@ -47,10 +47,6 @@ export class QueueComponent implements OnInit {
       this.queueService.submitRequest(this.requestUri);
     }
   }
-
-  openFavorites(): void {
-    this.router.navigateByUrl('/favorites');
-  }
 }
 
 export class PlaylistDataSource extends DataSource<any> {

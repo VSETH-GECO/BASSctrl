@@ -56,7 +56,7 @@
       </form>
     </mat-grid-tile>
     <mat-grid-tile colspan="1">
-      <button mat-icon-button (click)="openFavorites()" class="favorite-icon"><mat-icon>star</mat-icon></button>
+      <button mat-icon-button [routerLink]="['/favorites']" class="favorite-icon"><mat-icon>star</mat-icon></button>
     </mat-grid-tile>
     <mat-grid-tile colspan="5"></mat-grid-tile>
   </mat-grid-list>

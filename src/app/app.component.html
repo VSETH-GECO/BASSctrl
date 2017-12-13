@@ -4,25 +4,33 @@
 
     <div class="spacer"></div>
 
-    <div *ngIf="isAdmin">
-      <a mat-icon-button [routerLink]="['/update']" style="z-index: 1000000000">
-        <mat-icon>update</mat-icon>
-      </a>
-    </div>
     <div *ngIf="username" style="z-index: 1000000000">
       <button mat-button [matMenuTriggerFor]="menu">
         <span>{{username}} </span>
         <mat-icon>verified_user</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="logout()">Logout</button>
-        <button *ngIf="isAdmin" mat-menu-item [routerLink]="['/register']">Users</button>
-        <button mat-menu-item [routerLink]="['/about']">About</button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>eject</mat-icon>
+          <span>Logout</span>
+        </button>
+        <button *ngIf="isAdmin" mat-menu-item [routerLink]="['/register']">
+          <mat-icon>group</mat-icon>
+          <span>Users</span>
+        </button>
+        <button *ngIf="isAdmin" mat-menu-item [routerLink]="['/update']">
+          <mat-icon>update</mat-icon>
+          <span>Update</span>
+        </button>
+        <button mat-menu-item [routerLink]="['/about']">
+          <mat-icon>info</mat-icon>
+          <span>About</span>
+        </button>
       </mat-menu>
     </div>
     <div *ngIf="!username">
       <a mat-icon-button [routerLink]="['/login']" style="z-index: 1000000000">
-        <mat-icon>input</mat-icon>
+        <mat-icon>exit_to_app</mat-icon>
       </a>
     </div>
   </mat-toolbar>

@@ -86,7 +86,6 @@ export class UserService {
    * Removes the locally stored 'token'.
    */
   private removeToken(): void {
-    console.log('hi');
     this.storage.clear('token');
   }
 
@@ -136,6 +135,9 @@ export class UserService {
   }
 
   public getUserList(): Observable<User[]> {
+    if (!this.userList.getValue()) {
+      this.ws.send(new WsPackage(Resource.USER, Action.GET, null));
+    }
     return this.userList.asObservable();
   }
 }

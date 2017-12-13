@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {WsPackage} from '../services/socket/ws-package';
 import {WebSocketService} from '../services/socket/websocket.service';
 import {WsHandlerService} from '../services/socket/ws-handler.service';
@@ -20,7 +20,7 @@ export interface User {
   selector: 'app-register',
   templateUrl: './register.component.html',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   @Input() newUserName: string;
   @Input() newUserPassword: string;
   displayedColumns = ['name', 'admin', 'actions'];
@@ -44,6 +44,10 @@ export class RegisterComponent {
         }
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.userService.isAdmin().subscribe(isAdmin => this.displayedColumns = isAdmin ? ['name', 'admin', 'actions'] : ['name', 'admin']);
   }
 
   registerNewUser(): void {

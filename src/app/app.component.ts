@@ -57,6 +57,9 @@ export class AppComponent implements OnInit {
       if (data.action && data.action === Action.ERROR) {
         this.openSnackBar(data.message, 2000);
       }
+      if (data.action && data.action === Action.UPDATE) {
+        sb.openSnackbar(data.status);
+      }
     });
 
     sb.getSubject().subscribe(msg => {
@@ -84,8 +87,7 @@ export class AppComponent implements OnInit {
    *
    * @param {string} message the message to display
    * @param {number} duration how long the message should be visible
-   * @param {action?: {name: string; callback: (() => void)}} action action name and a function
-   *    that should be called when the user clicks on the action
+   * @param action that should be called when the user clicks on the action
    */
   private openSnackBar(message: string, duration: number, action?: {name: string, callback: () => void}): void {
     if (action) {

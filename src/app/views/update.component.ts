@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {WebSocketService} from '../services/socket/websocket.service';
 import {Action, Resource} from '../services/socket/api';
 import {WsPackage} from '../services/socket/ws-package';
+import {WsHandlerService} from '../services/socket/ws-handler.service';
 
 interface JenkinsResponse {
   actions: any;
@@ -46,14 +47,12 @@ export class UpdateComponent implements OnInit {
   baseURL = 'https://jenkins.stammgruppe.eu/';
 
   constructor (private sb: SnackbarService,
-               private http: HttpClient,
-               private ws: WebSocketService) {
+               private ws: WebSocketService,
+               private wsHandler: WsHandlerService,
+               private http: HttpClient) {
 
-    ws.wsPackages.subscribe(msg => {
-      if (msg.resource === Resource.APP && msg.action === Action.UPDATE) {
-        sb.openSnackbar(msg.data.status);
-        this.updateStatus = msg.data.status;
-      }
+    wsHandler.appSubject.subscribe(data => {
+      this.updateStatus = data.status;
     });
   }
 

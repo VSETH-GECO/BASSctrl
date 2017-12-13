@@ -30,6 +30,10 @@ export class WsHandlerService {
         }
         break;
 
+      case Action.UPDATE:
+        this.appSubject.next({action: msg.action, status: msg.data.status});
+        break;
+
       default:
         console.log('Unknown package:', msg);
     }

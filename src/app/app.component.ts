@@ -51,6 +51,12 @@ export class AppComponent implements OnInit {
           wsHandler.favorites(msg);
           break;
       }
+    },
+    error => {
+      ws.handleError(error);
+    },
+    () => {
+      ws.handleError();
     });
 
     wsHandler.appSubject.subscribe(data => {

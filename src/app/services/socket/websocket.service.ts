@@ -5,12 +5,17 @@ import {Action, Resource} from './api';
 import {Observer} from 'rxjs/Observer';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
+import {SnackbarService} from '../snackbar.service';
 
 @Injectable()
 export class WebSocketService {
+  // private MAX_RETRIES = 5;
+  // private retryNo = 0;
   private socket: Subject<MessageEvent>;
   private SERVER_URL = 'ws://' + window.location.hostname + ':8455';
   public wsPackages: Subject<WsPackage>;
+
+  constructor (private sb: SnackbarService) {}
 
   public connect(url?: string): Subject<MessageEvent> {
     if (!url) {
@@ -85,5 +90,29 @@ export class WebSocketService {
     }
 
     return this.wsPackages.asObservable();
+  }
+
+  public handleError(error?) {
+    this.sb.openSnackbar('Websocket connection failed. Please reload the page.', 5000);
+
+    /*
+    if (this.retryNo === this.MAX_RETRIES) {
+      this.sb.openSnackbar('Websocket error. Reload page when the problem is fixed.');
+      return;
+    }
+
+    let secsLeft = 5;
+    Observable.interval(1000)
+      .takeWhile(() => secsLeft > 0)
+      .subscribe(() => {
+        // this.sb.openSnackbar('Connection to server closed. Reconnecting in ' + secsLeft + '...', 1000);
+        console.log('Reconnecting in', secsLeft);
+        secsLeft--;
+        if (secsLeft === 0) {
+          this.retryNo++;
+          this.socket = null;
+          this.connect();
+        }
+      }); */
   }
 }

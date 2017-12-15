@@ -24,32 +24,36 @@ export class AppComponent implements OnInit {
               private sb: SnackbarService, private player: PlayerService) {
 
     ws.getObservable().subscribe(msg => {
-      let res: Resource;
-      res = msg.resource;
-      switch (res) {
-        case Resource.APP:
-          wsHandler.app(msg);
-          break;
+      try {
+        let res: Resource;
+        res = msg.resource;
+        switch (res) {
+          case Resource.APP:
+            wsHandler.app(msg);
+            break;
 
-        case Resource.USER:
-          wsHandler.user(msg);
-          break;
+          case Resource.USER:
+            wsHandler.user(msg);
+            break;
 
-        case Resource.QUEUE:
-          wsHandler.queue(msg);
-          break;
+          case Resource.QUEUE:
+            wsHandler.queue(msg);
+            break;
 
-        case Resource.TRACK:
-          wsHandler.track(msg);
-          break;
+          case Resource.TRACK:
+            wsHandler.track(msg);
+            break;
 
-        case Resource.PLAYER:
-          wsHandler.player(msg);
-          break;
+          case Resource.PLAYER:
+            wsHandler.player(msg);
+            break;
 
-        case Resource.FAVORITES:
-          wsHandler.favorites(msg);
-          break;
+          case Resource.FAVORITES:
+            wsHandler.favorites(msg);
+            break;
+        }
+      } catch (e) {
+        console.error('Error:', e.message);
       }
     },
     error => {

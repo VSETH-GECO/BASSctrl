@@ -6,12 +6,17 @@
       Status: {{updateStatus}}
     </div>
 
-    <div *ngIf="!updateStatus">
-      <mat-radio-group class="branches-radio-group" [(ngModel)]="branch">
-        <mat-radio-button *ngFor="let x of branches" [value]="x.name">
-          {{x.name}} at {{x.info}}
-        </mat-radio-button>
-      </mat-radio-group>
+    <div *ngIf="loading !== 0">
+      <mat-progress-bar [mode]="mode"></mat-progress-bar>
+    </div>
+    <div *ngIf="loading === 0">
+      <div *ngIf="!updateStatus">
+        <mat-radio-group class="branches-radio-group" [(ngModel)]="branch">
+          <mat-radio-button *ngFor="let x of branches" [value]="x.name">
+            {{x.name}} at {{x.info}}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
     </div>
   </mat-card-content>
 

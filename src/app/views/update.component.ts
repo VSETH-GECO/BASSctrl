@@ -41,8 +41,10 @@ class Branch {
   styleUrls: ['../app.component.css']
 })
 export class UpdateComponent implements OnInit {
+  mode = 'indeterminate';
   branch: string;
   branches: Branch[];
+  loading: number;
   updateStatus: string;
   baseURL = 'https://jenkins.stammgruppe.eu/';
 
@@ -58,9 +60,11 @@ export class UpdateComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.loading = 1;
     this.branches = [];
     this.http.get<any>(this.baseURL + 'job/BASS/api/json')
       .subscribe(data => {
+        this.loading = data.jobs.length;
         for (const job of data.jobs) {
 
           const branch = new Branch();
@@ -72,6 +76,8 @@ export class UpdateComponent implements OnInit {
             });
 
           this.branches.push(branch);
+          this.loading--;
+          console.log(this.loading);
         }
       });
   }

@@ -77,7 +77,6 @@ export class UpdateComponent implements OnInit {
 
           this.branches.push(branch);
           this.loading--;
-          console.log(this.loading);
         }
       });
   }

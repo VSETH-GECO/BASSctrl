@@ -90,7 +90,7 @@ export class QueueService {
   }
 
   public getQueue(): Observable<Track[]> {
-    if (!this.queue.getValue()) {
+    if (!this.queue.getValue() && this.isReady) {
       this.ws.send(new WsPackage(Resource.QUEUE, Action.GET, null));
     }
 

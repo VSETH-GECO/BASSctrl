@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {WsPackage} from './ws-package';
-import {Action} from './api';
+import {Action, Resource} from './api';
+import {WebSocketService} from './websocket.service';
 
 @Injectable()
 export class WsHandlerService {
   static API_VERSION = 'v2';
+  private SERVER_URL = 'ws://' + window.location.hostname + ':8455';
 
   public appSubject = new Subject<any>();
   public userSubject = new Subject<any>();
@@ -14,7 +16,47 @@ export class WsHandlerService {
   public playerSubject = new Subject<any>();
   public favoritesSubject = new Subject<any>();
 
-  constructor() {}
+  constructor(private ws: WebSocketService) {
+    ws.onopen = (ev: Event) => {
+      console.log('Connected to BASS');
+    };
+
+    ws.onmessage = (ev: MessageEvent) => {
+      const pack = JSON.parse(ev.data);
+      const wsPackage = new WsPackage(
+            Resource[<string>pack.resource.toUpperCase()],
+            Action[<string>pack.action.toUpperCase()],
+            pack.data);
+
+      switch (wsPackage.resource) {
+          case Resource.APP:
+            this.app(wsPackage);
+            break;
+
+          case Resource.USER:
+            this.user(wsPackage);
+            break;
+
+          case Resource.QUEUE:
+            this.queue(wsPackage);
+            break;
+
+          case Resource.TRACK:
+            this.track(wsPackage);
+            break;
+
+          case Resource.PLAYER:
+            this.player(wsPackage);
+            break;
+
+          case Resource.FAVORITES:
+            this.favorites(wsPackage);
+            break;
+        }
+    };
+
+    ws.connectTo(this.SERVER_URL);
+  }
 
   public app(msg: WsPackage): void {
     switch (msg.action) {

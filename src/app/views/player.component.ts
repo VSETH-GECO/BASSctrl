@@ -108,12 +108,12 @@ export class PlayerComponent implements OnInit {
 
   onPlayerMethod(): void {
     if (this.state === 'playing') {
-      this.wsService.wsPackages.next(
+      this.wsService.send(
         new WsPackage(Resource.PLAYER, Action.SET, {state: 'pause'})
       );
 
     } else {
-      this.wsService.wsPackages.next(
+      this.wsService.send(
         new WsPackage(Resource.PLAYER, Action.SET, {state: 'play'})
       );
     }

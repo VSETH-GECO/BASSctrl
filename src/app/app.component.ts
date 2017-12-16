@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {WebSocketService} from './services/socket/websocket.service';
 import {WsHandlerService} from './services/socket/ws-handler.service';
-import {Action, Resource} from './services/socket/api';
+import {Action} from './services/socket/api';
 import {MatSnackBar} from '@angular/material';
 import {SnackbarService} from './services/snackbar.service';
 import {UserService} from './services/user.service';
@@ -19,49 +18,9 @@ export class AppComponent implements OnInit {
   isAdmin: boolean;
   currentTrack: Track;
 
-  constructor(private ws: WebSocketService, private wsHandler: WsHandlerService,
+  constructor(private wsHandler: WsHandlerService,
               private userService: UserService, private snackBar: MatSnackBar,
               private sb: SnackbarService, private player: PlayerService) {
-
-    ws.getObservable().subscribe(msg => {
-      try {
-        let res: Resource;
-        res = msg.resource;
-        switch (res) {
-          case Resource.APP:
-            wsHandler.app(msg);
-            break;
-
-          case Resource.USER:
-            wsHandler.user(msg);
-            break;
-
-          case Resource.QUEUE:
-            wsHandler.queue(msg);
-            break;
-
-          case Resource.TRACK:
-            wsHandler.track(msg);
-            break;
-
-          case Resource.PLAYER:
-            wsHandler.player(msg);
-            break;
-
-          case Resource.FAVORITES:
-            wsHandler.favorites(msg);
-            break;
-        }
-      } catch (e) {
-        console.error('Error:', e.message);
-      }
-    },
-    error => {
-      ws.handleError(error);
-    },
-    () => {
-      ws.handleError();
-    });
 
     wsHandler.appSubject.subscribe(data => {
       if (data.action && data.action === Action.ERROR) {

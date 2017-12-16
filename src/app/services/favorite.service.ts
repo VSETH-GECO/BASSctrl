@@ -12,11 +12,13 @@ interface Favorite {
 
 @Injectable()
 export class FavoriteService {
+  private isReady: boolean;
   private favorites = new BehaviorSubject<Favorite[]>(null);
 
   constructor (private ws: WebSocketService, private wsHandler: WsHandlerService) {
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
+        this.isReady = true;
         ws.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
       }
     });
@@ -48,7 +50,7 @@ export class FavoriteService {
   }
 
   public getFavorites(): BehaviorSubject<Favorite[]> {
-    if (!this.favorites.getValue()) {
+    if (!this.favorites.getValue() && this.isReady) {
       this.ws.send(new WsPackage(Resource.FAVORITES, Action.GET, null));
     }
 

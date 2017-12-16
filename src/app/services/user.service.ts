@@ -135,7 +135,7 @@ export class UserService {
   }
 
   public getUserList(): Observable<User[]> {
-    if (!this.userList.getValue()) {
+    if (!this.userList.getValue() && this.isReady) {
       this.ws.send(new WsPackage(Resource.USER, Action.GET, null));
     }
     return this.userList.asObservable();

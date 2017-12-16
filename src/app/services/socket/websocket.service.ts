@@ -1,118 +1,118 @@
 import {Injectable} from '@angular/core';
-import {WsPackage} from './ws-package';
-import {Subject} from 'rxjs/Subject';
-import {Action, Resource} from './api';
-import {Observer} from 'rxjs/Observer';
-import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import {SnackbarService} from '../snackbar.service';
 
 @Injectable()
 export class WebSocketService {
-  // private MAX_RETRIES = 5;
-  // private retryNo = 0;
-  private socket: Subject<MessageEvent>;
-  private SERVER_URL = 'ws://' + window.location.hostname + ':8455';
-  public wsPackages: Subject<WsPackage>;
+  public reconnectInterval = 1000;
+  public timeoutInterval = 2000;
+  public readyState: number;
+  private forcedClose = false;
+  private timedOut = false;
+  private protocols: string[] = [];
 
-  constructor (private sb: SnackbarService) {}
+  // The underlying WebSocket
+  private ws: WebSocket;
+  private url: string;
 
-  public connect(url?: string): Subject<MessageEvent> {
-    if (!url) {
-      url = this.SERVER_URL;
+  public onopen: (ev: Event) => void = function (event: Event) {};
+  public onclose: (ev: CloseEvent) => void = function (event: CloseEvent) {};
+  public onconnecting: () => void = function () {};
+  public onmessage: (ev: MessageEvent) => void = function (event: MessageEvent) {};
+  public onerror: (ev: Event) => void = function (event: Event) {};
+
+  constructor() {}
+
+  /*
+  constructor(url?: string, protocols?: string[] = []) {
+    if (url && protocols) {
+      this.url = url;
+      this.protocols = protocols;
+      this.readyState = WebSocket.CONNECTING;
+      this.connect(false);
     }
+  } */
 
-    if (!this.socket) {
-      this.socket = this.create(url);
-      // DEBUG console.log('Connected to:', url);
-    }
-
-    return this.socket;
+  public connectTo(url: string) {
+    this.url = url;
+    this.readyState = WebSocket.CONNECTING;
+    this.connect(false);
   }
 
-  private create(url): Subject<MessageEvent> {
-    const socket = new WebSocket(url);
+  public connect(reconnectAttempt: boolean) {
+        this.ws = new WebSocket(this.url, this.protocols);
 
-    const observable = Observable.create(
-      (obs: Observer<MessageEvent>) => {
-        socket.onmessage = obs.next.bind(obs);
-        socket.onerror = obs.error.bind(obs);
-        socket.onclose = obs.complete.bind(obs);
+        this.onconnecting();
 
-        return socket.close.bind(socket);
-      });
+        const localWs = this.ws;
+        const timeout = setTimeout(() => {
+            this.timedOut = true;
+            localWs.close();
+            this.timedOut = false;
+        }, this.timeoutInterval);
 
-    const observer = {
-      next: (data: Object) => {
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify(data));
+        this.ws.onopen = (event: Event) => {
+            clearTimeout(timeout);
+            this.readyState = WebSocket.OPEN;
+            reconnectAttempt = false;
+            this.onopen(event);
+        };
+
+        this.ws.onclose = (event: CloseEvent) => {
+            clearTimeout(timeout);
+            this.ws = null;
+            if (this.forcedClose) {
+                this.readyState = WebSocket.CLOSED;
+                this.onclose(event);
+            } else {
+                this.readyState = WebSocket.CONNECTING;
+                this.onconnecting();
+                if (!reconnectAttempt && !this.timedOut) {
+                    this.onclose(event);
+                }
+                setTimeout(() => {
+                    this.connect(true);
+                }, this.reconnectInterval);
+            }
+        };
+        this.ws.onmessage = (event) => {
+            this.onmessage(event);
+        };
+        this.ws.onerror = (event) => {
+            this.onerror(event);
+        };
+    }
+
+  public send(data: any) {
+    if (this.ws) {
+        return this.ws.send(JSON.stringify(data));
+    } else {
+        throw new Error('INVALID_STATE_ERR : Pausing to reconnect websocket');
+    }
+  }
+
+    /**
+     * Returns boolean, whether websocket was FORCEFULLY closed.
+     */
+    public close(): boolean {
+        if (this.ws) {
+            this.forcedClose = true;
+            this.ws.close();
+            return true;
         }
-      }
-    };
-
-    return Subject.create(observer, observable);
-  }
-
-  public send(wsPackage: WsPackage): void {
-    if (!this.wsPackages) {
-      this.wsPackages = <Subject<WsPackage>>this.connect(this.SERVER_URL)
-        .map((response: MessageEvent): WsPackage => {
-          const pack = JSON.parse(response.data);
-          return {
-            resource: Resource[<string>pack.resource.toUpperCase()],
-            action: Action[<string>pack.action.toUpperCase()],
-            data: pack.data
-          };
-        });
+        return false;
     }
 
-    /* Very bad debugging stuff, don't use unless necessary!
-    try {
-      throw new Error();
-    } catch (e) {
-      console.log(e);
-    } */
-
-    this.wsPackages.next(wsPackage);
-  }
-
-  public getObservable(): Observable<WsPackage> {
-    if (!this.wsPackages) {
-      this.wsPackages = <Subject<WsPackage>>this.connect(this.SERVER_URL)
-        .map((response: MessageEvent): WsPackage => {
-          const pack = JSON.parse(response.data);
-          return {
-            resource: Resource[<string>pack.resource.toUpperCase()],
-            action: Action[<string>pack.action.toUpperCase()],
-            data: pack.data
-          };
-        });
-    }
-
-    return this.wsPackages.asObservable();
-  }
-
-  public handleError(error?) {
-    this.sb.openSnackbar('Websocket connection failed. Please reload the page.', 5000);
-
-    /*
-    if (this.retryNo === this.MAX_RETRIES) {
-      this.sb.openSnackbar('Websocket error. Reload page when the problem is fixed.');
-      return;
-    }
-
-    let secsLeft = 5;
-    Observable.interval(1000)
-      .takeWhile(() => secsLeft > 0)
-      .subscribe(() => {
-        // this.sb.openSnackbar('Connection to server closed. Reconnecting in ' + secsLeft + '...', 1000);
-        console.log('Reconnecting in', secsLeft);
-        secsLeft--;
-        if (secsLeft === 0) {
-          this.retryNo++;
-          this.socket = null;
-          this.connect();
+    /**
+     * Additional public API method to refresh the connection if still open (close, re-open).
+     * For example, if the app suspects bad data / missed heart beats, it can try to refresh.
+     *
+     * Returns boolean, whether websocket was closed.
+     */
+    public refresh(): boolean {
+        if (this.ws) {
+            this.ws.close();
+            return true;
         }
-      }); */
-  }
+        return false;
+    }
 }

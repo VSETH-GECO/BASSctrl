@@ -3,11 +3,13 @@ import {Subject} from 'rxjs/Subject';
 import {WsPackage} from './ws-package';
 import {Action, Resource} from './api';
 import {WebSocketService} from './websocket.service';
+import {SnackbarService} from '../snackbar.service';
 
 @Injectable()
 export class WsHandlerService {
   static API_VERSION = 'v2';
   private SERVER_URL = 'ws://' + window.location.hostname + ':8455';
+  private conErrorDisplayed: boolean;
 
   public appSubject = new Subject<any>();
   public userSubject = new Subject<any>();
@@ -16,7 +18,7 @@ export class WsHandlerService {
   public playerSubject = new Subject<any>();
   public favoritesSubject = new Subject<any>();
 
-  constructor(private ws: WebSocketService) {
+  constructor(private ws: WebSocketService, private sb: SnackbarService) {
     ws.onopen = (ev: Event) => {
       console.log('Connected to BASS');
     };
@@ -53,6 +55,13 @@ export class WsHandlerService {
             this.favorites(wsPackage);
             break;
         }
+    };
+
+    ws.onerror = (ev: Event) => {
+      if (!this.conErrorDisplayed) {
+        sb.openSnackbar('Connection to server failed. Trying to reconnect...', 5000);
+      }
+      this.conErrorDisplayed = true;
     };
 
     ws.connectTo(this.SERVER_URL);

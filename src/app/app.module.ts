@@ -44,6 +44,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {PlayerService} from './services/player.service';
 import {Ng2Webstorage} from 'ngx-webstorage';
 import {AboutComponent} from './views/about/about.component';
+import {ProfileComponent} from './views/profile/profile.component';
 
 RouterModule.forRoot([
   {
@@ -63,7 +64,8 @@ RouterModule.forRoot([
     FavoritesComponent,
     AboutComponent,
     UserEditorDialogComponent,
-    DeleteConfirmationDialogComponent
+    DeleteConfirmationDialogComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -105,6 +107,10 @@ RouterModule.forRoot([
       {
         path: 'update',
         component: UpdateComponent
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent
       },
       {
         path: 'about',

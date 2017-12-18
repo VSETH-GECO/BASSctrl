@@ -24,7 +24,6 @@ export class UserService {
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
         this.loginWToken();
-        this.ws.send(new WsPackage(Resource.USER, Action.GET, null));
         this.isReady = true;
       }
     });
@@ -37,6 +36,8 @@ export class UserService {
             break;
 
           case Action.LOGIN:
+            if (data.admin) {this.ws.send(new WsPackage(Resource.USER, Action.GET, null)); }
+
             this.username.next(data.username);
             this.userID.next(data.userID);
             this.admin.next(data.admin);
@@ -59,7 +60,9 @@ export class UserService {
             break;
 
           case Action.SUCCESS:
-            this.ws.send(new WsPackage(Resource.USER, Action.GET, null));
+            if (this.admin.getValue()) {
+              this.ws.send(new WsPackage(Resource.USER, Action.GET, null));
+            }
             sb.openSnackbar(data.data.message);
             break;
         }

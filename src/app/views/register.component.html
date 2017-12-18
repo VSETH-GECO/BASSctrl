@@ -7,17 +7,7 @@
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef> Username </mat-header-cell>
       <mat-cell *matCellDef="let user">
-        <div *ngIf="user.isEdited">
-          <form (ngSubmit)="editUsername(user)">
-            <mat-form-field>
-              <input matInput [(ngModel)]="user.name" name="editedUserName">
-              <button mat-icon-button matSuffix type="submit">
-                <mat-icon>save</mat-icon>
-              </button>
-            </mat-form-field>
-          </form>
-        </div>
-        <div *ngIf="!user.isEdited">{{user.name}}</div>
+        {{user.name}}
       </mat-cell>
     </ng-container>
 
@@ -30,19 +20,13 @@
       <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
       <mat-cell *matCellDef="let user">
         <span matTooltip="Delete {{user.name}}">
-          <button mat-icon-button (click)="deleteUser(user)">
+          <button mat-icon-button (click)="openDeleteUserDialog(user)">
             <mat-icon color="warn">delete</mat-icon>
           </button>
         </span>
 
-        <span [matTooltip]="user.isAdmin ? 'Demote as admin' : 'Promote to admin'">
-          <button mat-icon-button (click)="setAdmin(user)">
-            <mat-icon [color]="user.isAdmin ? '' : 'primary'">security</mat-icon>
-          </button>
-        </span>
-
-        <span matTooltip="Edit username">
-          <button mat-icon-button (click)="user.isEdited = !user.isEdited">
+        <span matTooltip="Edit {{user.name}}">
+          <button mat-icon-button (click)="openEditDialog(user)">
             <mat-icon>edit</mat-icon>
           </button>
         </span>

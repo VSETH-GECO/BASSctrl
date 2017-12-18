@@ -1,0 +1,15 @@
+<p>Edit user: {{name}}</p>
+
+<mat-form-field style="width: 100%">
+  <input matInput placeholder="Username" [(ngModel)]="user.name">
+</mat-form-field>
+<br>
+<mat-form-field style="width: 100%">
+  <input matInput placeholder="New password" [(ngModel)]="user.password">
+</mat-form-field>
+<br>
+<mat-checkbox [(ngModel)]="user.isAdmin">Admin</mat-checkbox>
+
+<br><br>
+<button mat-raised-button (click)="onCancel()">Cancel</button>
+<button mat-raised-button (click)="onSave()">Save</button>

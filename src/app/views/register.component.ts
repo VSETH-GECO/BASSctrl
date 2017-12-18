@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
 import {WsPackage} from '../services/socket/ws-package';
 import {WebSocketService} from '../services/socket/websocket.service';
 import {WsHandlerService} from '../services/socket/ws-handler.service';
@@ -7,13 +7,13 @@ import {SnackbarService} from '../services/snackbar.service';
 import {UserService} from '../services/user.service';
 import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 
 export interface User {
   userID: number;
   name: string;
   password: string;
   isAdmin: boolean;
-  isEdited: boolean;
 }
 
 @Component({
@@ -27,7 +27,8 @@ export class RegisterComponent implements OnInit {
   dataSource;
 
   constructor(private ws: WebSocketService, private wsHandler: WsHandlerService,
-              public sb: SnackbarService, private userService: UserService) {
+              private sb: SnackbarService, private userService: UserService,
+              private dialog: MatDialog) {
     this.dataSource = new UserListDataSource(this.userService);
 
     this.wsHandler.userSubject.subscribe(data => {
@@ -64,21 +65,54 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  deleteUser(user: User): void {
-    this.ws.send(new WsPackage(Resource.USER, Action.DELETE, {userID: user.userID}));
+  openDeleteUserDialog(user: User): void {
+    this.dialog.open();
   }
 
-  setAdmin(user: User): void {
-    this.ws.send(new WsPackage(Resource.USER, Action.UPDATE, {userID: user.userID, admin: !user.isAdmin}));
+  openEditDialog(user: User): void {
+    this.dialog.open(UserEditorDialogComponent, {width: '400px', data: {user: user}}).afterClosed().subscribe(result => {
+      if (result && result.status === 'saved') {
+
+        // Send new user info with or without the new password
+        if (result.user.password) {
+          this.ws.send(new WsPackage(Resource.USER, Action.UPDATE, {
+            userID: result.user.userID,
+            name:   result.user.name,
+            admin:  result.user.isAdmin,
+            password: result.user.password
+          }));
+        } else {
+          this.ws.send(new WsPackage(Resource.USER, Action.UPDATE, {
+            userID: result.user.userID,
+            name:   result.user.name,
+            admin:  result.user.isAdmin
+          }));
+        }
+        this.sb.openSnackbar('User data updated');
+      }
+    });
+  }
+}
+
+@Component({
+  selector: 'app-user-editor-dialog',
+  templateUrl: './user-editor-dialog.html'
+})
+export class UserEditorDialogComponent {
+  private user: User;
+  private name: string;
+
+  constructor(public dialogRef: MatDialogRef<UserEditorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    this.user = {name: data.user.name, userID: data.user.userID, isAdmin: data.user.isAdmin, password: null};
+    this.name = data.user.name;
   }
 
-  editUsername(user: User): void {
-    this.ws.send(new WsPackage(Resource.USER, Action.UPDATE, {userID: user.userID, name: user.name}));
+  onCancel(): void {
+    this.dialogRef.close({status: 'canceled'});
   }
 
-  editPassword(user: User): void {
-    this.ws.send(new WsPackage(Resource.USER, Action.UPDATE, {userID: user.userID, password: user.password}));
-    user.password = null;
+  onSave(): void {
+    this.dialogRef.close({status: 'saved', user: this.user});
   }
 }
 

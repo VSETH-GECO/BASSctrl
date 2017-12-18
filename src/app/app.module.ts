@@ -6,7 +6,7 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login.component';
 import {PlayerComponent} from './views/player.component';
-import {RegisterComponent} from './views/register.component';
+import {RegisterComponent, UserEditorDialogComponent} from './views/register.component';
 import {QueueComponent} from './views/queue.component';
 import {FavoritesComponent} from './views/favorites.component';
 import {UpdateComponent} from './views/update.component';
@@ -14,6 +14,8 @@ import {UpdateComponent} from './views/update.component';
 import {
   MatButtonModule,
   MatCardModule,
+  MatCheckboxModule,
+  MatDialogModule,
   MatExpansionModule,
   MatFormFieldModule,
   MatGridListModule,
@@ -59,7 +61,8 @@ RouterModule.forRoot([
     UpdateComponent,
     LoginComponent,
     FavoritesComponent,
-    AboutComponent
+    AboutComponent,
+    UserEditorDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -74,6 +77,7 @@ RouterModule.forRoot([
     MatIconModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
     MatMenuModule,
     MatSnackBarModule,
     MatTableModule,
@@ -81,6 +85,7 @@ RouterModule.forRoot([
     MatExpansionModule,
     MatTooltipModule,
     MatRadioModule,
+    MatDialogModule,
     HttpClientModule,
     Ng2Webstorage,
     RouterModule.forRoot([
@@ -115,6 +120,7 @@ RouterModule.forRoot([
       }
     ])
   ],
+  entryComponents: [UserEditorDialogComponent],
   providers: [
     WebSocketService,
     WsHandlerService,

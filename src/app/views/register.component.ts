@@ -107,8 +107,8 @@ export class RegisterComponent implements OnInit {
   templateUrl: './user-editor-dialog.html'
 })
 export class UserEditorDialogComponent {
-  private user: User;
-  private name: string;
+  user: User;
+  name: string;
 
   constructor(public dialogRef: MatDialogRef<UserEditorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.user = {name: data.user.name, userID: data.user.userID, isAdmin: data.user.isAdmin, password: null};
@@ -129,7 +129,11 @@ export class UserEditorDialogComponent {
   templateUrl: './delete-conf-dialog.html'
 })
 export class DeleteConfirmationDialogComponent {
-  constructor(public dialogRef: MatDialogRef<DeleteConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+  name: string;
+
+  constructor(public dialogRef: MatDialogRef<DeleteConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    this.name = data.name;
+  }
 
   onAbort(): void {
     this.dialogRef.close({del: false});

@@ -11,12 +11,12 @@ import {SnackbarService} from '../../services/snackbar.service';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  private name: string;
-  private userID: number;
-  private isAdmin: boolean;
+  name: string;
+  userID: number;
+  isAdmin: boolean;
 
-  private pw: string;
-  private pwConf: string;
+  pw: string;
+  pwConf: string;
 
   constructor(private us: UserService, private ws: WebSocketService,
               private sb: SnackbarService) { }

@@ -43,7 +43,7 @@ export class UserService {
             this.admin.next(data.admin);
             this.setToken(data.token);
             sb.openSnackbar('Logged in');
-            router.navigateByUrl('/main');
+            if (router.isActive('/login')) {router.navigateByUrl('/main'); }
             break;
 
           case Action.LOGOUT:

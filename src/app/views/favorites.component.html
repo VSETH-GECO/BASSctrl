@@ -1,0 +1,12 @@
+<mat-list>
+  <mat-list-item *ngFor="let track of favorites" class="favorite-list">
+    <span (click)="submitRequest(track.uri)" style="cursor: pointer">{{track.title}}</span>
+    <div class="spacer"></div>
+    <span style="cursor: pointer">
+      <button mat-icon-button (click)="removeFavorite(track)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </span>
+  </mat-list-item>
+</mat-list>
+

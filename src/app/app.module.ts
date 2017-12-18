@@ -6,25 +6,45 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login.component';
 import {PlayerComponent} from './views/player.component';
-import {MainViewComponent} from './views/main-view.component';
-import {RegisterComponent} from './views/register.component';
+import {DeleteConfirmationDialogComponent, RegisterComponent, UserEditorDialogComponent} from './views/register.component';
+import {QueueComponent} from './views/queue.component';
+import {FavoritesComponent} from './views/favorites.component';
+import {UpdateComponent} from './views/update.component';
 
 import {
   MatButtonModule,
   MatCardModule,
+  MatCheckboxModule,
+  MatDialogModule,
+  MatExpansionModule,
   MatFormFieldModule,
+  MatGridListModule,
   MatIconModule,
   MatInputModule,
   MatListModule,
   MatMenuModule,
   MatProgressBarModule,
   MatProgressSpinnerModule,
-  MatToolbarModule
+  MatRadioModule,
+  MatSnackBarModule,
+  MatTableModule,
+  MatToolbarModule,
+  MatTooltipModule
 } from '@angular/material';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {CookieService} from 'angular2-cookie/core';
-import {PlaylistComponent} from './views/playlist.component';
+import {SnackbarService} from './services/snackbar.service';
+import {UserService} from './services/user.service';
+import {WsHandlerService} from './services/socket/ws-handler.service';
+import {WebSocketService} from './services/socket/websocket.service';
+import {TrackService} from './services/track.service';
+import {FavoriteService} from './services/favorite.service';
+import {QueueService} from './services/queue.service';
+import {HttpClientModule} from '@angular/common/http';
+import {PlayerService} from './services/player.service';
+import {Ng2Webstorage} from 'ngx-webstorage';
+import {AboutComponent} from './views/about/about.component';
+import {ProfileComponent} from './views/profile/profile.component';
 
 RouterModule.forRoot([
   {
@@ -36,11 +56,16 @@ RouterModule.forRoot([
 @NgModule({
   declarations: [
     AppComponent,
-    MainViewComponent,
     RegisterComponent,
     PlayerComponent,
-    PlaylistComponent,
-    LoginComponent
+    QueueComponent,
+    UpdateComponent,
+    LoginComponent,
+    FavoritesComponent,
+    AboutComponent,
+    UserEditorDialogComponent,
+    DeleteConfirmationDialogComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +80,17 @@ RouterModule.forRoot([
     MatIconModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
     MatMenuModule,
+    MatSnackBarModule,
+    MatTableModule,
+    MatGridListModule,
+    MatExpansionModule,
+    MatTooltipModule,
+    MatRadioModule,
+    MatDialogModule,
+    HttpClientModule,
+    Ng2Webstorage,
     RouterModule.forRoot([
       {
         path: 'login',
@@ -66,8 +101,24 @@ RouterModule.forRoot([
         component: RegisterComponent
       },
       {
+        path: 'favorites',
+        component: FavoritesComponent
+      },
+      {
+        path: 'update',
+        component: UpdateComponent
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent
+      },
+      {
+        path: 'about',
+        component: AboutComponent
+      },
+      {
         path: 'main',
-        component: MainViewComponent
+        component: QueueComponent
       },
       {
         path: '',
@@ -76,7 +127,17 @@ RouterModule.forRoot([
       }
     ])
   ],
-  providers: [CookieService],
+  entryComponents: [UserEditorDialogComponent, DeleteConfirmationDialogComponent],
+  providers: [
+    WebSocketService,
+    WsHandlerService,
+    UserService,
+    SnackbarService,
+    QueueService,
+    TrackService,
+    FavoriteService,
+    PlayerService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

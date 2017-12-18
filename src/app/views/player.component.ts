@@ -1,23 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {WsPackage} from '../socket/ws-package';
-import {WebSocketService} from '../socket/websocket.service';
-import {WsHandlerService} from '../socket/ws-handler.service';
+import {WsPackage} from '../services/socket/ws-package';
+import {WebSocketService} from '../services/socket/websocket.service';
+import {PlayerService} from '../services/player.service';
 import {Observable} from 'rxjs/Observable';
-
-class Track {
-  id: number;
-  uri: string;
-  userID: string;
-  title: string; // is used in the html file...
-  votes: number;
-  length: number;
-  position: number;
-
-  thumbnail: string;
-  percent: number;
-  posString: string;
-  startAt: number;
-}
+import {Track} from '../util/track';
+import {Action, Resource} from '../services/socket/api';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/takeWhile';
 
 @Component({
   selector: 'app-player',
@@ -25,27 +14,25 @@ class Track {
   styleUrls: ['../app.component.css'],
 })
 export class PlayerComponent implements OnInit {
+  userID;
   track: Track;
   state: string;
   methodIcon: string;
+  favorites;
 
-  constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService) {
-    wsHandler.playerSubject.subscribe(data => {
-      if (!(typeof data.track === 'undefined')) {
-        this.setTrack(data.track);
-      }
-      if (data.state) {
-        this.setState(data.state);
-      }
-      if (data.isReady) {
-        this.wsService.send(new WsPackage('get', 'player/current', null));
-        this.wsService.send(new WsPackage('get', 'player/state', null));
-      }
-    });
+  constructor(private wsService: WebSocketService,
+              private playerService: PlayerService) {
   }
 
   ngOnInit(): void {
-    this.wsService.send(new WsPackage('get', 'player/current', null));
+    this.playerService.getTrack().subscribe(track => this.setTrack(track));
+    this.playerService.getState().subscribe(state => this.setState(state));
+  }
+
+  private updateFavorite(): void {
+    if (this.favorites && this.track && this.favorites.find(tr => tr.uri === this.track.uri)) {
+      this.track.isFavorite = true;
+    }
   }
 
   private setState(state): void {
@@ -57,6 +44,7 @@ export class PlayerComponent implements OnInit {
 
       case 'paused':
         this.track.position = Date.now() - this.track.startAt;
+        this.updateTrackProgress();
 
         this.methodIcon = 'play_arrow';
         break;
@@ -83,13 +71,18 @@ export class PlayerComponent implements OnInit {
     this.state = state;
   }
 
-  private setTrack(track): void {
+  private setTrack(track: Track): void {
     this.track = track;
 
     if (track) {
-      const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
-      this.track.thumbnail = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
       this.track.startAt = Date.now() - this.track.position;
+
+      if (track.uri.startsWith('https://www.youtube.com')) {
+        const id = track.uri.replace('https://www.youtube.com/watch?v=', '');
+        this.track.thumbnail = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+      } else {
+        this.track.thumbnail = 'assets/track.svg';
+      }
     }
   }
 
@@ -103,24 +96,51 @@ export class PlayerComponent implements OnInit {
     this.track.posString = '[' + posDateTime(new Date(pos)) + '|' + posDateTime(new Date(this.track.length)) + ']';
   }
 
+  updateVotes(): void {
+    if (this.userID && this.track) {
+      for (const voter of this.track.voters) {
+        if (voter[this.userID]) {
+          this.track.userVote = voter[this.userID];
+        }
+      }
+    }
+  }
+
   onPlayerMethod(): void {
     if (this.state === 'playing') {
-      this.wsService.wsPackages.next(
-        new WsPackage('patch', 'player/control', {state: 'pause'})
+      this.wsService.send(
+        new WsPackage(Resource.PLAYER, Action.SET, {state: 'pause'})
       );
 
     } else {
-      this.wsService.wsPackages.next(
-        new WsPackage('patch', 'player/control', {state: 'play'})
+      this.wsService.send(
+        new WsPackage(Resource.PLAYER, Action.SET, {state: 'play'})
       );
     }
   }
 
   voteTrack(vote): void {
     this.wsService.send(
-      new WsPackage('patch', 'track/vote', {
+      new WsPackage(Resource.TRACK, Action.VOTE, {
         id: this.track.id,
         vote: vote
       }));
+  }
+
+  favorite(track): void {
+    if (track.isFavorite) {
+      this.wsService.send(
+        new WsPackage(Resource.FAVORITES, Action.DELETE, {
+          uri: track.uri
+        }));
+    } else {
+      this.wsService.send(
+        new WsPackage(Resource.FAVORITES, Action.ADD, {
+          title: track.title,
+          uri: track.uri
+        }));
+    }
+
+    track.isFavorite = !track.isFavorite;
   }
 }

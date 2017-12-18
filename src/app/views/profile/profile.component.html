@@ -1,0 +1,15 @@
+<mat-card>
+  <mat-card-title>Welcome {{name}}</mat-card-title>
+
+  <mat-card-actions>
+    <form (ngSubmit)="changePassword()">
+      <mat-form-field >
+        <input required matInput placeholder="New Password" type="password" [(ngModel)]="pw" name="pass" autofocus> <br>
+      </mat-form-field>
+      <mat-form-field>
+        <input required matInput placeholder="Retype Password" type="password" [(ngModel)]="pwConf" name="passConf">
+      </mat-form-field>
+      <button mat-raised-button type="submit">Change Password</button>
+    </form>
+  </mat-card-actions>
+</mat-card>

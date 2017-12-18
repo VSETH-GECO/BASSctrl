@@ -1,0 +1,63 @@
+<div *ngIf="queue">
+  <div class="mat-elevation-z2">
+    <mat-table #table [dataSource]="dataSource">
+
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+        <mat-cell *matCellDef="let track"> {{track.title}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="user">
+        <mat-header-cell *matHeaderCellDef> User </mat-header-cell>
+        <mat-cell *matCellDef="let track"> {{track.userName}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="votes">
+        <mat-header-cell *matHeaderCellDef> Votes </mat-header-cell>
+        <mat-cell *matCellDef="let track"> {{track.votes}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let track">
+          <button mat-icon-button (click)="voteTrack(track, 1)" [color]="track.userVote == 1 ? 'primary' : 'basic'">
+            <mat-icon>thumb_up</mat-icon>
+          </button>
+          <button mat-icon-button (click)="voteTrack(track, -1)" [color]="track.userVote == -1 ? 'primary' : 'basic'">
+            <mat-icon>thumb_down</mat-icon>
+          </button>
+          <button mat-icon-button (click)="favorite(track)">
+            <mat-icon>{{track.isFavorite ? 'star' : 'star_border'}}</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+  </div>
+</div>
+
+<div *ngIf="submitPending" class="footer">
+  <mat-progress-spinner [diameter]="20" mode="indeterminate"></mat-progress-spinner>
+</div>
+
+<div *ngIf="!submitPending" class="footer">
+  <mat-grid-list cols="10" rowHeight="60px" class="test mat-elevation-z2" >
+    <mat-grid-tile colspan="4">
+      <form class="uri-form" (ngSubmit)="submitRequest()">
+        <mat-form-field class="uri-form-input">
+          <input matInput placeholder="URI" [(ngModel)]="requestUri" name="uriInput" autofocus>
+          <button mat-icon-button matSuffix type="submit">
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="1">
+      <button mat-icon-button [routerLink]="['/favorites']" class="favorite-icon"><mat-icon>star</mat-icon></button>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="5"></mat-grid-tile>
+  </mat-grid-list>
+</div>

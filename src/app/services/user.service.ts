@@ -8,6 +8,7 @@ import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {LocalStorageService} from 'ngx-webstorage';
 import {User} from '../views/register.component';
+import {Router} from '@angular/router';
 
 @Injectable()
 export class UserService {
@@ -18,7 +19,8 @@ export class UserService {
   private admin = new BehaviorSubject<boolean>(null);
 
   constructor(private wsHandler: WsHandlerService, private ws: WebSocketService,
-              private sb: SnackbarService, private storage: LocalStorageService) {
+              private sb: SnackbarService, private storage: LocalStorageService,
+              private router: Router) {
     wsHandler.appSubject.subscribe(data => {
       if (data.isReady) {
         this.loginWToken();
@@ -40,6 +42,7 @@ export class UserService {
             this.admin.next(data.admin);
             this.setToken(data.token);
             sb.openSnackbar('Logged in');
+            router.navigateByUrl('/main');
             break;
 
           case Action.LOGOUT:
@@ -48,10 +51,16 @@ export class UserService {
             this.admin.next(false);
             this.removeToken();
             sb.openSnackbar('Logged out');
+            router.navigateByUrl('/main');
             break;
 
           case Action.DATA:
             this.userList.next(data.data);
+            break;
+
+          case Action.SUCCESS:
+            this.ws.send(new WsPackage(Resource.USER, Action.GET, null));
+            sb.openSnackbar(data.data.message);
             break;
         }
       }

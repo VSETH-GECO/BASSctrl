@@ -115,6 +115,10 @@ export class WsHandlerService {
         this.userSubject.next({action: Action.DATA, data: msg.data});
         break;
 
+      case Action.SUCCESS:
+        this.userSubject.next({action: Action.SUCCESS, data: msg.data});
+        break;
+
       default:
         console.log('Unknown package:', msg);
     }

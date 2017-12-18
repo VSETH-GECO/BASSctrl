@@ -65,8 +65,16 @@ export class RegisterComponent implements OnInit {
     }
   }
 
+  deleteUser(user: User): void {
+    this.ws.send(new WsPackage(Resource.USER, Action.DELETE, {userID: user.userID}));
+  }
+
   openDeleteUserDialog(user: User): void {
-    this.dialog.open();
+    this.dialog.open(DeleteConfirmationDialogComponent, {data: {name: user.name}}).afterClosed().subscribe(result => {
+      if (result && result.del) {
+        this.deleteUser(user);
+      }
+    });
   }
 
   openEditDialog(user: User): void {
@@ -113,6 +121,22 @@ export class UserEditorDialogComponent {
 
   onSave(): void {
     this.dialogRef.close({status: 'saved', user: this.user});
+  }
+}
+
+@Component({
+  selector: 'app-delete-conf-dialog',
+  templateUrl: './delete-conf-dialog.html'
+})
+export class DeleteConfirmationDialogComponent {
+  constructor(public dialogRef: MatDialogRef<DeleteConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+
+  onAbort(): void {
+    this.dialogRef.close({del: false});
+  }
+
+  onConfirm(): void {
+    this.dialogRef.close({del: true});
   }
 }
 

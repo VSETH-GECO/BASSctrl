@@ -2,7 +2,6 @@ import {Component, Input} from '@angular/core';
 import {WsPackage} from '../services/socket/ws-package';
 import {WebSocketService} from '../services/socket/websocket.service';
 import {WsHandlerService} from '../services/socket/ws-handler.service';
-import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material';
 import {Action, Resource} from '../services/socket/api';
 
@@ -17,19 +16,13 @@ export class LoginComponent {
   @Input() loggingIn: boolean;
 
   constructor(private wsService: WebSocketService, private wsHandler: WsHandlerService,
-              private snackBar: MatSnackBar, private router: Router) {
+              private snackBar: MatSnackBar) {
     wsHandler.userSubject.subscribe(data => {
       if (data.action) {
         switch (data.action) {
           case Action.ERROR:
-            this.openSnackBar(data.message, null, 2000);
+            this.openSnackBar(data.message);
             break;
-
-          case Action.LOGIN:
-            this.openSnackBar('Logged in', null, 2000);
-            router.navigateByUrl('/main');
-            break;
-
         }
       }
     });

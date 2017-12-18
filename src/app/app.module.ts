@@ -6,7 +6,7 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './views/login.component';
 import {PlayerComponent} from './views/player.component';
-import {RegisterComponent, UserEditorDialogComponent} from './views/register.component';
+import {DeleteConfirmationDialogComponent, RegisterComponent, UserEditorDialogComponent} from './views/register.component';
 import {QueueComponent} from './views/queue.component';
 import {FavoritesComponent} from './views/favorites.component';
 import {UpdateComponent} from './views/update.component';
@@ -62,7 +62,8 @@ RouterModule.forRoot([
     LoginComponent,
     FavoritesComponent,
     AboutComponent,
-    UserEditorDialogComponent
+    UserEditorDialogComponent,
+    DeleteConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -120,7 +121,7 @@ RouterModule.forRoot([
       }
     ])
   ],
-  entryComponents: [UserEditorDialogComponent],
+  entryComponents: [UserEditorDialogComponent, DeleteConfirmationDialogComponent],
   providers: [
     WebSocketService,
     WsHandlerService,

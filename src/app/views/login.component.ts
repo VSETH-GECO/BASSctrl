@@ -19,16 +19,8 @@ export class LoginComponent {
               private snackBar: MatSnackBar) {
     wsHandler.userSubject.subscribe(data => {
       if (data.action) {
-        switch (data.action) {
-          case Action.ERROR:
-            snackBar.open(data.message);
-            break;
-
-          // FIXME
-          /*
-          case Action.LOGOUT:
-            router.navigateByUrl('/main');
-            break; */
+        if (data.action === Action.ERROR) {
+          snackBar.open(data.message);
         }
       }
     });

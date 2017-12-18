@@ -29,7 +29,7 @@ export class ProfileComponent implements OnInit {
 
   changePassword(): void {
     if (this.pw === this.pwConf) {
-      this.ws.send(new WsPackage(Resource.USER, Action.UPDATE, {userID: this.userID, password: this.pw}));
+      this.ws.send(new WsPackage(Resource.USER, Action.UPDATE, {password: this.pw}));
     } else {
       this.sb.openSnackbar('Passwords do not match');
     }

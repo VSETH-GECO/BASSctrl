@@ -1,4 +1,4 @@
-node {
+/* node {
   if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev') {
     def docker_params = '--entrypoint /bin/sh -v $WORKSPACE:/app -v /root/node_modules:/app/node_modules -w /app'
 
@@ -23,4 +23,31 @@ node {
       archiveArtifacts artifacts: '**/site.tar.gz', fingerprint: true
     }
   }
+}
+ */
+
+pipeline {
+  agent {
+    image 'alexsuch/angular-cli:1.5'
+    label 'Angular CLI'
+    args  '--entrypoint /bin/sh -v $WORKSPACE:/app -v /root/node_modules:/app/node_modules -w /app'
+  }
+  stages {
+    stage 'Install node packages'
+    node {
+      sh 'npm install'
+    }
+
+    stage 'Angular build'
+    node {
+      sh 'ng build -prod'
+    }
+
+    stage('Make archive')
+    node {
+      sh 'tar -czvf site.tar.gz dist/'
+      archiveArtifacts artifacts: '**/site.tar.gz', fingerprint: true
+    }
+  }
+
 }

@@ -14,7 +14,7 @@ pipeline {
 
     stage('Angular build') {
       steps {
-        sh 'ng build -prod'
+        sh 'ng build -prod --no-progress'
       }
     }
 

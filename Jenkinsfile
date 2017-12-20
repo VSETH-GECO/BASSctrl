@@ -7,7 +7,7 @@ node {
             checkout scm
         }
 
-        docker.image('alexsuch/angular-cli:1.5').inside(${docker_params}) {
+        docker.image('alexsuch/angular-cli:1.5').inside($docker_params) {
 
           stage('Install node packages') {
             sh 'npm install'

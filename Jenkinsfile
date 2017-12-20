@@ -7,7 +7,6 @@ node {
         checkout scm
     }
 
-    stage('Start docker') {
       docker.image('alexsuch/angular-cli:1.5').inside(docker_params) {
 
         stage('Install node packages') {
@@ -18,7 +17,6 @@ node {
           sh 'ng build -prod'
         }
       }
-    }
 
     stage('Make archive') {
       sh 'tar -czvf site.tar.gz dist/'

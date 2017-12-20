@@ -33,13 +33,13 @@ pipeline {
     args  '--entrypoint /bin/sh -v $WORKSPACE:/app -v /root/node_modules:/app/node_modules -w /app'
   }
   stages {
-    stage 'Install node packages' {
+    stage('Install node packages') {
       steps {
         sh 'npm install'
       }
     }
 
-    stage 'Angular build' {
+    stage('Angular build') {
       steps {
         sh 'ng build -prod'
       }

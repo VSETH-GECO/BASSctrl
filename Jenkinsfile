@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image 'alexsuch/angular-cli:1.5'
-      args  '--entrypoint /bin/sh -v $WORKSPACE:/app -v /root/node_modules:/app/node_modules -w /app'
+      args  '--entrypoint /bin/sh -v $WORKSPACE:/app -w /app'
     }
   }
   stages {

@@ -1,7 +1,6 @@
 node {
     if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'dev') {
-        def workingdir = pwd()
-        def docker_params = '--entrypoint /bin/sh -v ${workingdir}:/app -v /root/node_modules:/app/node_modules -w /app'
+        def docker_params = '--entrypoint /bin/sh -v' + pwd() + ':/app -v /root/node_modules:/app/node_modules -w /app'
 
         stage('Clone Repository') {
             checkout scm

@@ -12,7 +12,7 @@
     <div *ngIf="loading === 0">
       <div *ngIf="!updateStatus">
         <mat-radio-group class="branches-radio-group" [(ngModel)]="branch">
-          <mat-radio-button *ngFor="let x of branches" [value]="x.name">
+          <mat-radio-button *ngFor="let x of branches" [value]="x.name" color="primary">
             [{{x.name}}] at {{x.info}}
           </mat-radio-button>
         </mat-radio-group>

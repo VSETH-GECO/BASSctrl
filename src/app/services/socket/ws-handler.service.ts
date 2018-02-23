@@ -82,7 +82,11 @@ export class WsHandlerService {
         break;
 
       case Action.UPDATE:
-        this.appSubject.next({action: msg.action, status: msg.data.status});
+        if (msg.data.status) {
+          this.appSubject.next({action: msg.action, status: msg.data.status});
+        } else if (msg.data.progress) {
+          this.appSubject.next({action: msg.action, progress: msg.data.progress});
+        }
         break;
 
       default:

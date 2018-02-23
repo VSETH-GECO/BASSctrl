@@ -46,6 +46,7 @@ export class UpdateComponent implements OnInit {
   branches: Branch[];
   loading: number;
   updateStatus: string;
+  progress: number;
   baseURL = 'https://jenkins.stammgruppe.eu/';
 
   constructor (private sb: SnackbarService,
@@ -54,7 +55,12 @@ export class UpdateComponent implements OnInit {
                private http: HttpClient) {
 
     wsHandler.appSubject.subscribe(data => {
-      this.updateStatus = data.status;
+      if (data.status) {
+        this.updateStatus = data.status;
+        this.mode = 'determinate';
+      } else if (data.progress) {
+        this.progress = data.progress;
+      }
     });
   }
 

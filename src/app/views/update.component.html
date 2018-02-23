@@ -3,11 +3,11 @@
 
   <mat-card-content>
     <div *ngIf="updateStatus">
-      Status: {{updateStatus}}
+      Status: {{updateStatus}} {{progress}}%
     </div>
 
-    <div *ngIf="loading !== 0">
-      <mat-progress-bar [mode]="mode"></mat-progress-bar>
+    <div *ngIf="loading !== 0 || progress" >
+      <mat-progress-bar [mode]="mode" [value]="progress"></mat-progress-bar>
     </div>
     <div *ngIf="loading === 0">
       <div *ngIf="!updateStatus">
